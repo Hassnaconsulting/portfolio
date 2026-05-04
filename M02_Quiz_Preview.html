@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 02 Quiz — ChatGPT for HR Teams</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>:root {
+  --bg: #F5F2EC; --dark: #1A1208; --dark2: #2A2010;
+  --cu: #C45E1A; --cu-l: #FAEEE0; --sand: #E6DFD0;
+  --ink2: #3A3328; --ink3: #7A6F60; --grn: #1E4D38;
+  --grn-l: #DEF0EB; --red: #8B2010; --red-l: #FDE8E0;
+  --line: rgba(26,18,8,0.1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif }
+body { background: var(--bg); color: var(--dark); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+
+/* HEADER */
+.quiz-header { background: #1A1208; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #C45E1A; }
+.qh-left { display: flex; flex-direction: column; gap: 3px }
+.qh-tag { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #E8A040; }
+.qh-title { font-size: 18px; font-weight: 600; color: #EDE8DC; letter-spacing: -.01em; }
+.qh-right { font-family: 'Courier New', monospace; font-size: 11px; color: #C4B89A; }
+
+/* PROGRESS */
+.progress-bar { height: 4px; background: rgba(255,255,255,.08); }
+.progress-fill { height: 100%; background: var(--cu); transition: width .4s ease; }
+
+/* BODY */
+.quiz-body { max-width: 680px; margin: 0 auto; padding: 36px 24px; }
+
+/* INTRO */
+.intro-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 24px; }
+.intro-title { font-size: 22px; font-weight: 600; color: var(--dark); margin-bottom: 10px; }
+.intro-text { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 14px; }
+.intro-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-badge { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); border: 1px solid rgba(196,94,26,.25); padding: 4px 10px; }
+.btn-start { margin-top: 20px; display: inline-block; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 12px 28px; border: none; cursor: pointer; font-family: inherit; transition: background .2s; }
+.btn-start:hover { background: var(--cu); }
+
+/* QUESTION */
+.q-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 16px; display: none; }
+.q-card.active { display: block; }
+.q-counter { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); margin-bottom: 12px; letter-spacing: .08em; }
+.q-text { font-size: 16px; font-weight: 500; color: var(--dark); line-height: 1.55; margin-bottom: 20px; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); cursor: pointer; transition: background .15s, border-color .15s; background: var(--bg); }
+.q-opt:hover { background: var(--cu-l); border-color: rgba(196,94,26,.3); }
+.q-opt.selected { background: var(--cu-l); border-color: var(--cu); }
+.q-opt.correct { background: var(--grn-l); border-color: var(--grn); }
+.q-opt.wrong { background: var(--red-l); border-color: var(--red); }
+.q-opt.disabled { cursor: default; pointer-events: none; }
+.opt-letter { font-family: 'Courier New', monospace; font-size: 12px; color: var(--cu); min-width: 18px; font-weight: 600; margin-top: 1px; }
+.opt-text { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+.q-feedback { margin-top: 14px; padding: 12px 14px; border-left: 4px solid; font-size: 13px; line-height: 1.6; display: none; }
+.q-feedback.correct { background: var(--grn-l); border-color: var(--grn); color: var(--grn); }
+.q-feedback.wrong { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.btn-next { margin-top: 18px; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; display: none; transition: background .2s; }
+.btn-next:hover { background: var(--cu); }
+.btn-next.visible { display: inline-block; }
+
+/* RESULTS */
+.results-card { background: #fff; border: 1px solid var(--line); padding: 32px 28px; display: none; }
+.results-card.active { display: block; }
+.r-score-block { text-align: center; padding: 24px; background: var(--dark); margin-bottom: 24px; }
+.r-score-num { font-family: 'Courier New', monospace; font-size: 56px; line-height: 1; margin-bottom: 6px; }
+.r-score-pass .r-score-num { color: var(--cu); }
+.r-score-fail .r-score-num { color: #E06040; }
+.r-score-label { font-size: 13px; color: #C4B89A; }
+.r-status { display: inline-block; font-family: 'Courier New', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; margin-top: 8px; }
+.r-score-pass .r-status { color: var(--cu); border: 1px solid rgba(196,94,26,.4); }
+.r-score-fail .r-status { color: #E06040; border: 1px solid rgba(224,96,64,.4); }
+.r-breakdown { margin-bottom: 20px; }
+.r-breakdown-title { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--cu); margin-bottom: 10px; }
+.r-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.r-icon { font-size: 14px; min-width: 18px; }
+.r-q-text { color: var(--ink2); flex: 1; }
+.r-correct-ans { font-size: 12px; color: var(--grn); margin-top: 2px; }
+.r-wrong-ans { font-size: 12px; color: var(--red); margin-top: 2px; }
+.btn-retry { background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; margin-right: 10px; transition: background .2s; }
+.btn-retry:hover { background: var(--cu); }
+.q-hint { font-size: 12px; color: var(--ink3); margin-top: 10px; }
+
+/* FOOTER */
+.quiz-footer { background: var(--dark); padding: 12px 32px; display: flex; justify-content: space-between; margin-top: 32px; }
+.qf-l, .qf-r { font-family: 'Courier New', monospace; font-size: 10px; color: #6A5840; }
+</style>
+<script>var SCORM = {
+  API: null, initialized: false,
+  findAPI: function(w) {
+    var n = 0;
+    while (w.API == null && n <= 7) {
+      n++;
+      if (w.parent == null || w.parent == w) break;
+      w = w.parent;
+    }
+    return w.API;
+  },
+  init: function() {
+    this.API = this.findAPI(window);
+    if (!this.API && window.opener) this.API = this.findAPI(window.opener);
+    if (this.API) { this.API.LMSInitialize(""); this.initialized = true; }
+  },
+  set: function(k,v) { if(this.API) this.API.LMSSetValue(k,v); },
+  commit: function() { if(this.API) this.API.LMSCommit(""); },
+  finish: function(score, status) {
+    if (!this.initialized) return;
+    this.set("cmi.core.score.raw", score);
+    this.set("cmi.core.score.min", "0");
+    this.set("cmi.core.score.max", "100");
+    this.set("cmi.core.lesson_status", status);
+    this.set("cmi.core.exit", "");
+    this.commit();
+    this.API.LMSFinish("");
+  }
+};
+window.addEventListener('load', function(){ SCORM.init(); });
+</script>
+</head>
+<body>
+
+<div class="quiz-header">
+  <div class="qh-left">
+    <div class="qh-tag">Assessment · Module 02 · Bloom 3–4 · Apply / Analyze</div>
+    <div class="qh-title">Onboarding & Communication — Knowledge Check</div>
+  </div>
+  <div class="qh-right">ChatGPT for HR Teams · TechCorp France</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+<div class="quiz-body">
+  <div id="intro">
+    <div class="intro-card">
+      <div class="intro-title">Module 02 Assessment</div>
+      <p class="intro-text">This quiz evaluates your understanding of the three use cases covered in Module 02: creating personalized onboarding plans, writing internal HR communications, and summarizing complex documents.</p>
+      <div class="intro-meta">
+        <span class="meta-badge">5 questions</span>
+        <span class="meta-badge">Pass: 4/5 (80%)</span>
+        <span class="meta-badge">Bloom 3–4 · Apply / Analyze</span>
+        <span class="meta-badge">~8 minutes</span>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  </div>
+
+  <div id="questions">
+
+    <div class="q-card" id="q1">
+      <div class="q-counter">Question 1 of 5</div>
+      <div class="q-text">You use this prompt: <em>"Create a 90-day onboarding plan for a new HR Business Partner."</em> The result is structured but feels generic. What is the single most effective change?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Ask ChatGPT to make the plan more detailed and add more tasks</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Add company context: sector, company size, direct manager name, and key tools used</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Change the number of phases from 3 to 4</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Specify the start date and end date of the onboarding period</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+      <button class="btn-next" id="next1" onclick="nextQ(1)">Next question →</button>
+    </div>
+    <div class="q-card" id="q2">
+      <div class="q-counter">Question 2 of 5</div>
+      <div class="q-text">You want ChatGPT to write an internal HR announcement that sounds like your company — not like a generic corporate communication. Which technique should you use?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Tell ChatGPT to "write in a professional and friendly tone"</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Ask ChatGPT to use simple language and avoid jargon</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Paste an example of your company's existing communications into the prompt as a style reference</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Ask ChatGPT to write 3 different versions and choose the best one</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+      <button class="btn-next" id="next2" onclick="nextQ(2)">Next question →</button>
+    </div>
+    <div class="q-card" id="q3">
+      <div class="q-counter">Question 3 of 5</div>
+      <div class="q-text">You receive a 20-page legal HR update and need to communicate it to your team. Which prompt will give you the most directly usable output?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q3','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">"Summarize this document in 5 bullet points."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">"Summarize this HR legal update. Provide: 3 key points managers need to know, 2 action items for HR, and 1 sentence for a Slack announcement."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">"Explain this document in simple language for non-lawyers."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">"What are the most important parts of this document?"</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+      <button class="btn-next" id="next3" onclick="nextQ(3)">Next question →</button>
+    </div>
+    <div class="q-card" id="q4">
+      <div class="q-counter">Question 4 of 5</div>
+      <div class="q-text">ChatGPT generates an onboarding plan for a new Finance Manager. The plan includes "weekly team lunches" and "open office drop-in sessions" — but your company has been fully remote since 2020. Which check has failed?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q4','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Accuracy — the factual information in the plan is incorrect</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Relevance — the output is not adapted to your company's actual work context</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Tone — the language doesn't match your company's communication style</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Both Accuracy and Relevance have failed</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+      <button class="btn-next" id="next4" onclick="nextQ(4)">Next question →</button>
+    </div>
+    <div class="q-card" id="q5">
+      <div class="q-counter">Question 5 of 5</div>
+      <div class="q-text">After the workshop, a colleague asks why she should add her onboarding prompt to the team Notion library instead of just saving it in her own notes. What is the strongest argument?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q5','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Because Notion is easier to search than personal notes</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Because the trainer asked everyone to do it</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Because every team member's prompts become available to all — the library grows with each new use case and everyone benefits from each other's refinements</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Because it creates a backup in case she loses her notes</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+      <button class="btn-next" id="next5" onclick="showResults()">See results →</button>
+    </div>
+  </div>
+
+  <div class="results-card" id="results">
+    <div id="score-block"></div>
+    <div class="r-breakdown">
+      <div class="r-breakdown-title">Question breakdown</div>
+      <div id="breakdown"></div>
+    </div>
+    <button class="btn-retry" onclick="retryQuiz()">Retry quiz</button>
+    <p class="q-hint">Minimum pass: 4/5. If you scored below, review the module slides and try again.</p>
+  </div>
+</div>
+
+<div class="quiz-footer">
+  <span class="qf-l">[Your Name] · AI Integration Consultant · Phase D — ADDIE · Module 02 Assessment</span>
+  <span class="qf-r">Illustrative scenario · TechCorp France 2025</span>
+</div>
+
+<script>
+const ANSWERS = {
+  q1: { correct: 'B', feedback: { correct: 'Correct. The more specific context you provide — sector, culture, manager, tools — the more immediately usable the plan becomes. Generic prompt = generic plan. Context is always the key.', wrong: 'Not quite. Adding more tasks or changing the number of phases won\'t solve the core issue. The output is generic because ChatGPT doesn\'t know your company. Specific context (sector, manager, tools) is what transforms a template into a usable plan.' } },
+  q2: { correct: 'C', feedback: { correct: 'Correct. This is the few-shot technique — you give ChatGPT an example of your company\'s voice and it matches the style precisely. "Write in a friendly tone" is too vague. An actual example gives ChatGPT the specific vocabulary, sentence length, and formality level you use.', wrong: 'Not quite. Vague tone instructions ("professional and friendly", "simple language") give vague results. The most effective technique is to paste a real example of your company\'s communication style — ChatGPT will match it.' } },
+  q3: { correct: 'B', feedback: { correct: 'Correct. This prompt specifies the audience (managers vs HR), the format (3 key points, 2 action items, 1 sentence), and the output channel (Slack). The output is immediately usable for three different purposes without any rework.', wrong: 'Not quite. Generic summary prompts give generic summaries. The most effective approach structures the output by audience and purpose — managers need different information than HR, and a Slack message has different constraints than an email. Specify all three in your prompt.' } },
+  q4: { correct: 'B', feedback: { correct: 'Correct. The plan is factually plausible — team lunches and drop-in sessions are real onboarding activities. But they are not relevant to a fully remote company. Relevance is about adapting the output to your specific context — and in this case the context (remote work since 2020) was missing from the prompt.', wrong: 'Not quite. The information isn\'t factually wrong — team lunches do exist. The problem is that it\'s not relevant to a fully remote company. This is a Relevance failure: the output isn\'t adapted to your actual working context. Always include remote/hybrid/on-site context in your onboarding prompts.' } },
+  q5: { correct: 'C', feedback: { correct: 'Correct. The shared library creates a network effect: one person\'s refined prompt for a specific use case immediately benefits everyone. When Thomas improves the 360° synthesis prompt next month, all 8 team members benefit without doing any extra work.', wrong: 'Not quite. The real value of a shared library is collective intelligence — every refinement benefits the whole team. It\'s not about convenience or backup. One person\'s breakthrough prompt immediately becomes a tool for 8 people.' } },
+};
+const LABELS = {
+  q1: 'Context in onboarding prompts',
+  q2: 'Tone adaptation technique',
+  q3: 'Document summary structure',
+  q4: '3-check rule application',
+  q5: 'Prompt library value',
+};
+const QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'];
+let current = 0, score = 0, userAnswers = {};
+
+function startQuiz() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('questions').style.display = 'block';
+  showQuestion(0);
+}
+function showQuestion(idx) {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(QUESTIONS[idx]).classList.add('active');
+  document.getElementById('pbar').style.width = (idx / QUESTIONS.length * 100) + '%';
+}
+function selectOpt(el, qid, letter) {
+  if (userAnswers[qid]) return;
+  userAnswers[qid] = letter;
+  var opts = el.parentElement.querySelectorAll('.q-opt');
+  var correct = ANSWERS[qid].correct;
+  var isCorrect = letter === correct;
+  opts.forEach(function(o) { o.classList.add('disabled'); });
+  opts.forEach(function(o) {
+    var l = o.querySelector('.opt-letter').textContent;
+    if (l === correct) o.classList.add('correct');
+    else if (l === letter && !isCorrect) o.classList.add('wrong');
+  });
+  var idx = QUESTIONS.indexOf(qid) + 1;
+  var fb = document.getElementById('fb' + idx);
+  fb.textContent = (isCorrect ? '✓ ' : '✗ ') + (isCorrect ? ANSWERS[qid].feedback.correct : ANSWERS[qid].feedback.wrong);
+  fb.className = 'q-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.style.display = 'block';
+  if (isCorrect) score++;
+  document.getElementById('next' + idx).classList.add('visible');
+}
+function nextQ(num) { current++; if (current < QUESTIONS.length) showQuestion(current); }
+function showResults() {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('pbar').style.width = '100%';
+  document.getElementById('results').classList.add('active');
+  var pct = Math.round(score / QUESTIONS.length * 100);
+  var passed = score >= 4;
+  document.getElementById('score-block').innerHTML =
+    '<div class="r-score-block ' + (passed ? 'r-score-pass' : 'r-score-fail') + '">' +
+    '<div class="r-score-num">' + score + ' / 5</div>' +
+    '<div class="r-score-label">' + pct + '% — ' + (passed ? 'Well done.' : 'Below pass threshold.') + '</div>' +
+    '<div class="r-status">' + (passed ? 'PASSED' : 'NOT PASSED') + '</div></div>';
+  document.getElementById('breakdown').innerHTML = QUESTIONS.map(function(qid) {
+    var ua = userAnswers[qid], correct = ANSWERS[qid].correct, ok = ua === correct;
+    return '<div class="r-item"><span class="r-icon">' + (ok ? '✓' : '✗') + '</span>' +
+      '<div><div class="r-q-text">' + LABELS[qid] + '</div>' +
+      '<div class="' + (ok ? 'r-correct-ans' : 'r-wrong-ans') + '">Your answer: ' + ua + ' · Correct: ' + correct + '</div></div></div>';
+  }).join('');
+  SCORM.finish(pct, passed ? 'passed' : 'failed');
+}
+function retryQuiz() {
+  current = 0; score = 0; userAnswers = {};
+  document.querySelectorAll('.q-opt').forEach(function(o) {
+    o.className = 'q-opt';
+    var qid = o.closest('.q-card').id;
+    var letter = o.querySelector('.opt-letter').textContent;
+    o.onclick = function() { selectOpt(this, qid, letter); };
+  });
+  document.querySelectorAll('.q-feedback').forEach(f => f.style.display='none');
+  document.querySelectorAll('.btn-next').forEach(b => b.classList.remove('visible'));
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('questions').style.display = 'block';
+  document.getElementById('pbar').style.width = '0%';
+  showQuestion(0);
+}
+document.getElementById('questions').style.display = 'none';
+</script>
+</body>
+</html>

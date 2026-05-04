@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 03 Quiz — ChatGPT for HR Teams</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>:root {
+  --bg: #F5F2EC; --dark: #1A1208; --dark2: #2A2010;
+  --cu: #C45E1A; --cu-l: #FAEEE0; --sand: #E6DFD0;
+  --ink2: #3A3328; --ink3: #7A6F60; --grn: #1E4D38;
+  --grn-l: #DEF0EB; --red: #8B2010; --red-l: #FDE8E0;
+  --line: rgba(26,18,8,0.1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif }
+body { background: var(--bg); color: var(--dark); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+
+/* HEADER */
+.quiz-header { background: var(--dark2); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+.qh-left { display: flex; flex-direction: column; gap: 3px }
+.qh-tag { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #A09070; }
+.qh-title { font-size: 18px; font-weight: 600; color: #EDE8DC; letter-spacing: -.01em; }
+.qh-right { font-family: 'Courier New', monospace; font-size: 11px; color: #A09070; }
+
+/* PROGRESS */
+.progress-bar { height: 4px; background: rgba(255,255,255,.08); }
+.progress-fill { height: 100%; background: var(--cu); transition: width .4s ease; }
+
+/* BODY */
+.quiz-body { max-width: 680px; margin: 0 auto; padding: 36px 24px; }
+
+/* INTRO */
+.intro-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 24px; }
+.intro-title { font-size: 22px; font-weight: 600; color: var(--dark); margin-bottom: 10px; }
+.intro-text { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 14px; }
+.intro-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-badge { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); border: 1px solid rgba(196,94,26,.25); padding: 4px 10px; }
+.btn-start { margin-top: 20px; display: inline-block; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 12px 28px; border: none; cursor: pointer; font-family: inherit; transition: background .2s; }
+.btn-start:hover { background: var(--cu); }
+
+/* QUESTION */
+.q-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 16px; display: none; }
+.q-card.active { display: block; }
+.q-counter { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); margin-bottom: 12px; letter-spacing: .08em; }
+.q-text { font-size: 16px; font-weight: 500; color: var(--dark); line-height: 1.55; margin-bottom: 20px; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); cursor: pointer; transition: background .15s, border-color .15s; background: var(--bg); }
+.q-opt:hover { background: var(--cu-l); border-color: rgba(196,94,26,.3); }
+.q-opt.selected { background: var(--cu-l); border-color: var(--cu); }
+.q-opt.correct { background: var(--grn-l); border-color: var(--grn); }
+.q-opt.wrong { background: var(--red-l); border-color: var(--red); }
+.q-opt.disabled { cursor: default; pointer-events: none; }
+.opt-letter { font-family: 'Courier New', monospace; font-size: 12px; color: var(--cu); min-width: 18px; font-weight: 600; margin-top: 1px; }
+.opt-text { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+.q-feedback { margin-top: 14px; padding: 12px 14px; border-left: 4px solid; font-size: 13px; line-height: 1.6; display: none; }
+.q-feedback.correct { background: var(--grn-l); border-color: var(--grn); color: var(--grn); }
+.q-feedback.wrong { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.btn-next { margin-top: 18px; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; display: none; transition: background .2s; }
+.btn-next:hover { background: var(--cu); }
+.btn-next.visible { display: inline-block; }
+
+/* RESULTS */
+.results-card { background: #fff; border: 1px solid var(--line); padding: 32px 28px; display: none; }
+.results-card.active { display: block; }
+.r-score-block { text-align: center; padding: 24px; background: var(--dark); margin-bottom: 24px; }
+.r-score-num { font-family: 'Courier New', monospace; font-size: 56px; line-height: 1; margin-bottom: 6px; }
+.r-score-pass .r-score-num { color: var(--cu); }
+.r-score-fail .r-score-num { color: #E06040; }
+.r-score-label { font-size: 13px; color: #C4B89A; }
+.r-status { display: inline-block; font-family: 'Courier New', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; margin-top: 8px; }
+.r-score-pass .r-status { color: var(--cu); border: 1px solid rgba(196,94,26,.4); }
+.r-score-fail .r-status { color: #E06040; border: 1px solid rgba(224,96,64,.4); }
+.r-breakdown { margin-bottom: 20px; }
+.r-breakdown-title { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--cu); margin-bottom: 10px; }
+.r-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.r-icon { font-size: 14px; min-width: 18px; }
+.r-q-text { color: var(--ink2); flex: 1; }
+.r-correct-ans { font-size: 12px; color: var(--grn); margin-top: 2px; }
+.r-wrong-ans { font-size: 12px; color: var(--red); margin-top: 2px; }
+.btn-retry { background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; margin-right: 10px; transition: background .2s; }
+.btn-retry:hover { background: var(--cu); }
+.q-hint { font-size: 12px; color: var(--ink3); margin-top: 10px; }
+
+/* FOOTER */
+.quiz-footer { background: var(--dark); padding: 12px 32px; display: flex; justify-content: space-between; margin-top: 32px; }
+.qf-l, .qf-r { font-family: 'Courier New', monospace; font-size: 10px; color: #6A5840; }
+</style>
+<script>var SCORM = {
+  API: null, initialized: false,
+  findAPI: function(w) {
+    var n = 0;
+    while (w.API == null && n <= 7) {
+      n++;
+      if (w.parent == null || w.parent == w) break;
+      w = w.parent;
+    }
+    return w.API;
+  },
+  init: function() {
+    this.API = this.findAPI(window);
+    if (!this.API && window.opener) this.API = this.findAPI(window.opener);
+    if (this.API) { this.API.LMSInitialize(""); this.initialized = true; }
+  },
+  set: function(k,v) { if(this.API) this.API.LMSSetValue(k,v); },
+  commit: function() { if(this.API) this.API.LMSCommit(""); },
+  finish: function(score, status) {
+    if (!this.initialized) return;
+    this.set("cmi.core.score.raw", score);
+    this.set("cmi.core.score.min", "0");
+    this.set("cmi.core.score.max", "100");
+    this.set("cmi.core.lesson_status", status);
+    this.set("cmi.core.exit", "");
+    this.commit();
+    this.API.LMSFinish("");
+  }
+};
+window.addEventListener('load', function(){ SCORM.init(); });
+</script>
+</head>
+<body>
+
+<div class="quiz-header">
+  <div class="qh-left">
+    <div class="qh-tag">Assessment · Module 03 · Bloom 4–6 · Analyze / Create / Evaluate</div>
+    <div class="qh-title">Performance & Appraisals — Knowledge Check</div>
+  </div>
+  <div class="qh-right">ChatGPT for HR Teams · TechCorp France</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+<div class="quiz-body">
+  <div id="intro">
+    <div class="intro-card">
+      <div class="intro-title">Module 03 Assessment</div>
+      <p class="intro-text">This quiz evaluates your understanding of the three performance management use cases covered in Module 03: annual appraisal preparation, 360° feedback synthesis, and constructive feedback using the SBI framework.</p>
+      <div class="intro-meta">
+        <span class="meta-badge">5 questions</span>
+        <span class="meta-badge">Pass: 4/5 (80%)</span>
+        <span class="meta-badge">Bloom 4–6 · Analyze / Create / Evaluate</span>
+        <span class="meta-badge">~8 minutes</span>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  </div>
+
+  <div id="questions">
+
+    <div class="q-card" id="q1">
+      <div class="q-counter">Question 1 of 5</div>
+      <div class="q-text">You are preparing an annual appraisal for a senior HRBP with 4 years in the company. Which prompt will give you the most useful preparation output?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">"Write 10 questions for an annual performance review."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">"You are an experienced HR Business Partner. Help me prepare an annual appraisal for [ROLE] with 4 years in the company. Context: [KEY ACHIEVEMENTS / CHALLENGES]. Prepare: 5 structured questions, 3 development areas to explore, a 60-minute meeting structure, and key phrases for giving difficult feedback constructively."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">"What are the best questions to ask in a performance review?"</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">"Write a performance review template for an HRBP."</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+      <button class="btn-next" id="next1" onclick="nextQ(1)">Next question →</button>
+    </div>
+    <div class="q-card" id="q2">
+      <div class="q-counter">Question 2 of 5</div>
+      <div class="q-text">You have 8 raw 360° feedbacks ready to synthesize with ChatGPT. What is the mandatory step BEFORE pasting them into ChatGPT?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Convert the feedbacks from Word to PDF format</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Get written approval from each reviewer that their feedback can be processed by AI</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Anonymize all feedbacks — remove names and any identifying details, use role labels only (Manager A, Peer B)</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Translate the feedbacks into English if they are in another language</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+      <button class="btn-next" id="next2" onclick="nextQ(2)">Next question →</button>
+    </div>
+    <div class="q-card" id="q3">
+      <div class="q-counter">Question 3 of 5</div>
+      <div class="q-text">You receive a 360° synthesis from ChatGPT. Which output indicates the highest quality synthesis?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q3','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">"This person is generally positive and well-regarded by the team."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">"Strengths: communication, teamwork, leadership. Areas for improvement: time management, delegation."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">"Consistently recognized for ability to build trust with business leaders, with 6 of 8 reviewers citing specific conflict resolution examples. Priority development area: delegation — 5 of 8 reviewers noted tendency to retain tasks that could be transferred to the team."</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">"The feedback is mostly positive with some areas to work on."</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+      <button class="btn-next" id="next3" onclick="nextQ(3)">Next question →</button>
+    </div>
+    <div class="q-card" id="q4">
+      <div class="q-counter">Question 4 of 5</div>
+      <div class="q-text">You need to give constructive feedback to a team member who interrupted a presenter three times during a team meeting. Which approach correctly applies the SBI framework?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q4','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Tell the person they need to work on their listening skills and be more respectful in meetings</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Situation: "During Tuesday's team meeting" — Behavior: "when you interrupted the presenter three times" — Impact: "it created tension and reduced her confidence to continue presenting"</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Ask ChatGPT to write a performance improvement plan for the team member</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Wait for the annual appraisal to address the issue formally</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+      <button class="btn-next" id="next4" onclick="nextQ(4)">Next question →</button>
+    </div>
+    <div class="q-card" id="q5">
+      <div class="q-counter">Question 5 of 5</div>
+      <div class="q-text">ChatGPT generates a complete annual appraisal review for one of your team members. What should you do before using it?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q5','A')">
+          <span class="opt-letter">A</span>
+          <span class="opt-text">Use it directly — it was generated from the information you provided, so it reflects the reality</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','B')">
+          <span class="opt-letter">B</span>
+          <span class="opt-text">Read it carefully, personalize it with your direct knowledge of the person, adjust any generalities, and apply the 3-check rule before sending</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','C')">
+          <span class="opt-letter">C</span>
+          <span class="opt-text">Ask ChatGPT to generate 3 different versions and use whichever sounds best</span>
+        </div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','D')">
+          <span class="opt-letter">D</span>
+          <span class="opt-text">Send it to legal for review before using it in any HR document</span>
+        </div>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+      <button class="btn-next" id="next5" onclick="showResults()">See results →</button>
+    </div>
+  </div>
+
+  <div class="results-card" id="results">
+    <div id="score-block"></div>
+    <div class="r-breakdown">
+      <div class="r-breakdown-title">Question breakdown</div>
+      <div id="breakdown"></div>
+    </div>
+    <button class="btn-retry" onclick="retryQuiz()">Retry quiz</button>
+    <p class="q-hint">Minimum pass: 4/5. If you scored below, review the module slides and try again.</p>
+  </div>
+</div>
+
+<div class="quiz-footer">
+  <span class="qf-l">[Your Name] · AI Integration Consultant · Phase D — ADDIE · Module 03 Assessment</span>
+  <span class="qf-r">Illustrative scenario · TechCorp France 2025</span>
+</div>
+
+<script>
+const ANSWERS = {
+  q1: { correct: 'B', feedback: { correct: 'Correct. This prompt includes Role, Context (years in company + achievements/challenges), and a specific Format (questions + development areas + meeting structure + difficult feedback phrases). The output addresses all four dimensions of appraisal preparation in one prompt.', wrong: 'Not quite. Generic prompts produce generic outputs. The key is combining Role, specific Context about this person, and a structured Format that covers all dimensions of preparation — not just questions, but also development areas, meeting structure, and language for difficult conversations.' } },
+  q2: { correct: 'C', feedback: { correct: 'Correct. Anonymization is mandatory before pasting any 360° data into ChatGPT. Remove all names and replace with labels (Manager A, Peer B, Direct Report C). This protects reviewer confidentiality and is a professional obligation. Without this step, you risk breaching the trust of the people who gave honest feedback.', wrong: 'Not quite. The mandatory step is anonymization — removing all names and identifying details before pasting into any AI tool. Format, approval, or language are secondary concerns. Confidentiality of reviewers is the primary professional obligation.' } },
+  q3: { correct: 'C', feedback: { correct: 'Correct. This output is specific (6 of 8 reviewers), evidence-based (conflict resolution examples), and quantified (5 of 8 on delegation). It gives you actionable information, not a vague summary. The quality of the synthesis depends on the quality of your prompt — ask for specific numbers and evidence.', wrong: 'Not quite. Options A, B, and D are vague summaries that don\'t give you actionable information. A high-quality 360° synthesis quantifies ("6 of 8 reviewers"), provides evidence ("specific conflict resolution examples"), and identifies precise behaviors ("tendency to retain tasks"). Prompt for these elements explicitly.' } },
+  q4: { correct: 'B', feedback: { correct: 'Correct. This is the SBI framework applied precisely: Situation (specific event — Tuesday\'s meeting), Behavior (observable action — interrupted three times, not a character judgment), Impact (concrete consequence — tension and reduced confidence). This is direct, specific, and focuses on behavior — not personality.', wrong: 'Not quite. "Work on listening skills" and "be more respectful" are character judgments, not behavioral feedback. SBI requires a specific Situation, an observable Behavior, and a concrete Impact. ChatGPT can help you formulate the words — but the structure must be SBI.' } },
+  q5: { correct: 'B', feedback: { correct: 'Correct. ChatGPT formulates — you deliver. Always read the output carefully, add your direct knowledge of the person (nuances that weren\'t in your prompt), and apply the 3-check rule. Your name is on the document. Your relationship with this person is at stake. The AI is a first draft, not a final product.', wrong: 'Not quite. Never use AI-generated performance content without careful review and personalization. ChatGPT doesn\'t know the person — it only knows what you told it. Your direct knowledge of the individual, their history, and your relationship are irreplaceable. The AI provides structure and language; you provide judgment.' } },
+};
+const LABELS = {
+  q1: 'Appraisal preparation prompt',
+  q2: '360° ethics — mandatory step',
+  q3: '360° synthesis quality',
+  q4: 'SBI feedback framework',
+  q5: 'Limits of AI in performance management',
+};
+const QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'];
+let current = 0, score = 0, userAnswers = {};
+
+function startQuiz() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('questions').style.display = 'block';
+  showQuestion(0);
+}
+function showQuestion(idx) {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(QUESTIONS[idx]).classList.add('active');
+  document.getElementById('pbar').style.width = (idx / QUESTIONS.length * 100) + '%';
+}
+function selectOpt(el, qid, letter) {
+  if (userAnswers[qid]) return;
+  userAnswers[qid] = letter;
+  var opts = el.parentElement.querySelectorAll('.q-opt');
+  var correct = ANSWERS[qid].correct;
+  var isCorrect = letter === correct;
+  opts.forEach(function(o) { o.classList.add('disabled'); });
+  opts.forEach(function(o) {
+    var l = o.querySelector('.opt-letter').textContent;
+    if (l === correct) o.classList.add('correct');
+    else if (l === letter && !isCorrect) o.classList.add('wrong');
+  });
+  var idx = QUESTIONS.indexOf(qid) + 1;
+  var fb = document.getElementById('fb' + idx);
+  fb.textContent = (isCorrect ? '✓ ' : '✗ ') + (isCorrect ? ANSWERS[qid].feedback.correct : ANSWERS[qid].feedback.wrong);
+  fb.className = 'q-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.style.display = 'block';
+  if (isCorrect) score++;
+  document.getElementById('next' + idx).classList.add('visible');
+}
+function nextQ(num) { current++; if (current < QUESTIONS.length) showQuestion(current); }
+function showResults() {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('pbar').style.width = '100%';
+  document.getElementById('results').classList.add('active');
+  var pct = Math.round(score / QUESTIONS.length * 100);
+  var passed = score >= 4;
+  document.getElementById('score-block').innerHTML =
+    '<div class="r-score-block ' + (passed ? 'r-score-pass' : 'r-score-fail') + '">' +
+    '<div class="r-score-num">' + score + ' / 5</div>' +
+    '<div class="r-score-label">' + pct + '% — ' + (passed ? 'Well done.' : 'Below pass threshold.') + '</div>' +
+    '<div class="r-status">' + (passed ? 'PASSED' : 'NOT PASSED') + '</div></div>';
+  document.getElementById('breakdown').innerHTML = QUESTIONS.map(function(qid) {
+    var ua = userAnswers[qid], correct = ANSWERS[qid].correct, ok = ua === correct;
+    return '<div class="r-item"><span class="r-icon">' + (ok ? '✓' : '✗') + '</span>' +
+      '<div><div class="r-q-text">' + LABELS[qid] + '</div>' +
+      '<div class="' + (ok ? 'r-correct-ans' : 'r-wrong-ans') + '">Your answer: ' + ua + ' · Correct: ' + correct + '</div></div></div>';
+  }).join('');
+  SCORM.finish(pct, passed ? 'passed' : 'failed');
+}
+function retryQuiz() {
+  current = 0; score = 0; userAnswers = {};
+  document.querySelectorAll('.q-opt').forEach(function(o) {
+    o.className = 'q-opt';
+    var qid = o.closest('.q-card').id;
+    var letter = o.querySelector('.opt-letter').textContent;
+    o.onclick = function() { selectOpt(this, qid, letter); };
+  });
+  document.querySelectorAll('.q-feedback').forEach(f => f.style.display='none');
+  document.querySelectorAll('.btn-next').forEach(b => b.classList.remove('visible'));
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('questions').style.display = 'block';
+  document.getElementById('pbar').style.width = '0%';
+  showQuestion(0);
+}
+document.getElementById('questions').style.display = 'none';
+</script>
+</body>
+</html>
