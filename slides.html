@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop F1 — ChatGPT for HR Teams · 4h</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=Courier+Prime:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ivory:  #F5F2EC;
+  --sand:   #E6DFD0;
+  --sand2:  #D5CBB8;
+  --dk:     #1C1610;
+  --dk2:    #2A2018;
+  --dk3:    #362C20;
+  --ink:    #1C1610;
+  --ink2:   #3A3020;
+  --ink3:   #6A5E4A;
+  --cream:  #F0E8D8;
+  --cream2: #D4C8A8;
+  --amber:  #E8A040;
+  --cu:     #C45E1A;
+  --cu-l:   #F7ECD8;
+  --line-l: rgba(28,22,16,0.1);
+  --line-d: rgba(240,232,216,0.1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif}
+body{background:var(--dk);color:var(--ink)}
+
+/* ── ENGINE ── */
+.deck{width:100%;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .3s ease}
+.slide.active{display:flex;opacity:1}
+
+/* ── FIXED UI ── */
+.back-btn{position:fixed;top:14px;left:18px;z-index:300;font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--cream2);text-decoration:none;background:rgba(18,14,8,.96);padding:7px 14px;border:1px solid rgba(196,94,26,.35)}
+.back-btn:hover{color:var(--amber)}
+.hint{position:fixed;bottom:68px;right:18px;font-size:11px;color:var(--cream2);font-family:'Courier Prime',monospace;letter-spacing:.04em;opacity:.4}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:rgba(28,22,16,.94);backdrop-filter:blur(12px);border:1px solid rgba(232,160,64,.3);border-radius:40px;padding:9px 22px;z-index:100}
+.nav button{background:none;border:none;color:var(--amber);font-size:17px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .2s}
+.nav button:hover{background:rgba(232,160,64,.15)}
+.nav button:disabled{opacity:.25;cursor:default}
+.counter{color:var(--cream2);font-size:12px;min-width:56px;text-align:center;letter-spacing:.05em;font-family:'Courier Prime',monospace}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(240,232,216,.2);transition:all .3s;cursor:pointer}
+.dot.active{background:var(--amber);width:16px;border-radius:3px}
+
+/* ── PROGRESS BAR ── */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(240,232,216,.08);z-index:200}
+.progress-fill{height:100%;background:var(--cu);transition:width .4s ease;width:2%}
+
+/* ══ SLIDE TYPES ══ */
+
+/* COVER */
+.s-cover{background:var(--dk);flex-direction:row;overflow:hidden;position:relative;height:100%}
+.s-cover::before{content:'';position:absolute;top:-20%;right:-8%;width:55%;height:120%;background:radial-gradient(ellipse,rgba(196,94,26,.15) 0%,transparent 65%);pointer-events:none}
+.cover-left{width:55%;padding:72px 56px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.cover-right{width:45%;background:rgba(240,232,216,.04);border-left:1px solid rgba(232,160,64,.18);padding:52px 48px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.cover-tag{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--amber);margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.cover-tag::before{content:'';width:28px;height:1px;background:var(--amber)}
+.cover-h1{font-family:'Playfair Display',serif;font-size:52px;font-weight:600;color:var(--cream);line-height:1.08;margin-bottom:18px;letter-spacing:-.02em}
+.cover-h1 em{font-style:italic;color:var(--amber)}
+.cover-sub{font-size:15px;color:var(--cream2);line-height:1.72;margin-bottom:40px;max-width:380px;font-weight:300}
+.cover-stats{display:flex;gap:28px}
+.cs-item{display:flex;flex-direction:column;gap:3px}
+.cs-val{font-family:'Courier Prime',monospace;font-size:26px;font-weight:400;color:var(--cream);letter-spacing:.02em;line-height:1}
+.cs-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cream2)}
+.agenda-heading{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);margin-bottom:16px;font-family:'Courier Prime',monospace}
+.agenda-row{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-d)}
+.agenda-row:last-child{border-bottom:none}
+.a-num{font-family:'Courier Prime',monospace;font-size:11px;color:var(--amber);min-width:28px;padding-top:2px}
+.a-body strong{display:block;font-size:13px;color:var(--cream);font-weight:500;margin-bottom:2px}
+.a-body span{font-size:11px;color:var(--cream2)}
+
+/* DIVIDER */
+.s-divider{background:var(--sand);justify-content:center;align-items:center;position:relative;overflow:hidden;display:flex;height:100%}
+.div-num{font-family:'Playfair Display',serif;font-size:200px;font-weight:600;color:rgba(28,22,16,.06);line-height:1;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);user-select:none}
+.div-inner{text-align:center;position:relative;z-index:2;max-width:640px;padding:60px 40px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.div-label{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cu);margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:12px}
+.div-label::before,.div-label::after{content:'';width:36px;height:1px;background:var(--cu)}
+.div-title{font-family:'Playfair Display',serif;font-size:46px;font-weight:600;color:var(--ink);line-height:1.12;margin-bottom:14px;letter-spacing:-.02em}
+.div-title em{font-style:italic;color:var(--cu)}
+.div-sub{font-size:15px;color:var(--ink3);line-height:1.65;max-width:500px}
+.div-badges{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* CONTENT */
+.s-content{background:var(--ivory);flex-direction:column;height:100%}
+.slide-header{background:var(--dk2);padding:16px 52px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;text-align:center}
+.slide-header>div:first-child{text-align:center}
+.slide-module{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber)}
+.slide-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--cream);margin-top:4px;letter-spacing:-.01em}
+.slide-timing{position:absolute;right:52px;top:50%;transform:translateY(-50%);font-family:'Courier Prime',monospace;font-size:11px;color:var(--cream2);background:rgba(240,232,216,.08);padding:5px 14px;border-radius:20px}
+.slide-body{flex:1;padding:24px 52px;display:flex;gap:28px;overflow:hidden}
+.slide-body.col{flex-direction:column;gap:16px}
+.col-half{flex:1}
+.col-3{flex:3}
+.col-2{flex:2}
+
+/* FOOTER */
+.slide-footer{padding:10px 52px;background:var(--sand);border-top:1px solid var(--line-l);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.sf-l,.sf-r{font-size:11px;color:var(--ink3);font-family:'Courier Prime',monospace}
+
+/* ══ COMPONENTS ══ */
+
+.big-stat{background:var(--dk2);border-radius:10px;padding:24px 20px;text-align:center;border:1px solid var(--line-d)}
+.big-stat-num{font-family:'Courier Prime',monospace;font-size:54px;font-weight:400;color:var(--amber);line-height:1;margin-bottom:7px;letter-spacing:.02em}
+.big-stat-label{font-size:13px;color:var(--cream2);line-height:1.5}
+
+.hbox{border-left:4px solid var(--cu);background:var(--cu-l);border-radius:0 8px 8px 0;padding:14px 18px;margin:5px 0}
+.hbox.sand{border-color:var(--ink3);background:var(--sand)}
+.hbox.dark{border-color:var(--amber);background:var(--dk2);border-radius:8px}
+.hbox.warn{border-color:#A84010;background:#F5E0D0}
+.hb-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.hbox .hb-title{color:var(--cu)}
+.hbox.sand .hb-title{color:var(--ink3)}
+.hbox.dark .hb-title{color:var(--amber)}
+.hbox.warn .hb-title{color:#7A3010}
+.hb-text{font-size:13px;line-height:1.62}
+.hbox .hb-text,.hbox.warn .hb-text{color:var(--ink2)}
+.hbox.sand .hb-text{color:var(--ink2)}
+.hbox.dark .hb-text{color:var(--cream)}
+
+.prompt-box{background:var(--dk);border-radius:8px;padding:16px 20px;border:1px solid rgba(196,94,26,.25)}
+.prompt-label{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
+.prompt-text{font-family:'Courier Prime',monospace;font-size:12px;color:var(--cream);line-height:1.75}
+.pv{color:var(--amber)}
+
+.blist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.blist li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink2);line-height:1.55}
+.blist li::before{content:'';display:block;width:5px;height:5px;border-radius:50%;background:var(--cu);flex-shrink:0;margin-top:6px}
+.blist.on-dark li{color:var(--cream)}
+.blist.on-dark li::before{background:var(--amber)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:var(--dk2);color:var(--cream);padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.04em}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--line-l);color:var(--ink2);vertical-align:top;line-height:1.5}
+.tbl tr:nth-child(even) td{background:var(--sand)}
+.tbl .gain{font-family:'Courier Prime',monospace;color:var(--cu);font-weight:500}
+
+h2.sh{font-family:'Playfair Display',serif;font-size:19px;color:var(--ink);margin-bottom:12px;font-weight:600}
+h2.sh.on-dark{color:var(--cream)}
+p.lead{font-size:14px;color:var(--ink2);line-height:1.7;margin-bottom:12px}
+p.lead.on-dark{color:var(--cream)}
+p.muted{font-size:12px;color:var(--ink3);line-height:1.6}
+p.muted.on-dark{color:var(--cream2)}
+
+.bloom{display:inline-block;font-size:11px;padding:3px 12px;border-radius:20px;font-weight:500;background:var(--sand);color:var(--cu);border:1px solid rgba(196,94,26,.25)}
+
+.step-flow{display:flex;gap:0;align-items:stretch;margin:8px 0}
+.step-item{flex:1;background:var(--sand);padding:16px 12px;position:relative;text-align:center}
+.step-item:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--cu);z-index:2;background:var(--ivory);width:26px;text-align:center}
+.step-item:first-child{border-radius:8px 0 0 8px}
+.step-item:last-child{border-radius:0 8px 8px 0}
+.step-circle{width:30px;height:30px;border-radius:50%;background:var(--dk2);color:var(--cream);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.step-lbl{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.step-desc{font-size:11px;color:var(--ink3);line-height:1.4}
+
+.ex-box{background:var(--dk2);border-radius:10px;padding:18px 22px;border:1px solid rgba(232,160,64,.2)}
+.ex-tag{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:7px}
+.ex-title{font-size:14px;font-weight:500;color:var(--cream);margin-bottom:7px}
+.ex-text{font-size:13px;color:var(--cream2);line-height:1.62}
+.ex-timer{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;color:var(--amber);border:1px solid rgba(232,160,64,.3);padding:4px 12px;border-radius:20px;font-family:'Courier Prime',monospace}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.phase-label{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--cu);padding:5px 0;border-bottom:1px solid var(--line-l);margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">← Portfolio</a>
+<div class="hint">← → or Space to navigate</div>
+<div class="progress"><div class="progress-fill" id="pbar"></div></div>
+
+<div class="deck" id="deck">
+
+<!-- ═══ SLIDE 1 — COVER ═══ -->
+<div class="slide active" style="display:flex;flex-direction:column;">
+<div class="s-cover" style="flex:1;display:flex;flex-direction:row;">
+  <div class="cover-left">
+    <div class="cover-tag">Training F1 · 4-hour Workshop</div>
+    <div class="cover-h1">ChatGPT for<br><em>HR Teams</em></div>
+    <div class="cover-sub">Save 2 hours a day on recruiting, onboarding, and performance — no technical skills required.</div>
+    <div class="cover-stats">
+      <div class="cs-item"><div class="cs-val">4h</div><div class="cs-label">Workshop</div></div>
+      <div class="cs-item"><div class="cs-val">8</div><div class="cs-label">Participants</div></div>
+      <div class="cs-item"><div class="cs-val">20</div><div class="cs-label">HR Prompts</div></div>
+      <div class="cs-item"><div class="cs-val">100%</div><div class="cs-label">Practice</div></div>
+    </div>
+  </div>
+  <div class="cover-right">
+    <div class="agenda-heading">Agenda</div>
+    <div class="agenda-row"><div class="a-num">M00</div><div class="a-body"><strong>Introduction</strong><span>Why AI matters · The time problem · 15 min</span></div></div>
+    <div class="agenda-row"><div class="a-num">M01</div><div class="a-body"><strong>Recruiting</strong><span>Job description · STAR questions · CV summary · 55 min</span></div></div>
+    <div class="agenda-row"><div class="a-num">M02</div><div class="a-body"><strong>Onboarding & Communication</strong><span>Plans · Emails · Summaries · 55 min</span></div></div>
+    <div class="agenda-row"><div class="a-num">M03</div><div class="a-body"><strong>Performance & Appraisals</strong><span>360° feedback · IDP · Annual appraisal · 55 min</span></div></div>
+    <div class="agenda-row"><div class="a-num">M04</div><div class="a-body"><strong>Prompt Engineering</strong><span>Advanced structures · Library · Adoption plan · 40 min</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 2 — M00: The time problem ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M00 — Introduction</div><div class="slide-title">The problem — How many hours are lost every week?</div></div><div class="slide-timing">10 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+      <div class="big-stat"><div class="big-stat-num">60%</div><div class="big-stat-label">of HR team time spent on repetitive tasks<br>that AI can accelerate by 80%</div></div>
+      <table class="tbl">
+        <thead><tr><th>HR Task</th><th>Current</th><th>With AI</th><th>Gain</th></tr></thead>
+        <tbody>
+          <tr><td>Job description</td><td>45 min</td><td>5 min</td><td class="gain">40 min</td></tr>
+          <tr><td>Recruitment email</td><td>25 min</td><td>3 min</td><td class="gain">22 min</td></tr>
+          <tr><td>CV summary</td><td>35 min</td><td>5 min</td><td class="gain">30 min</td></tr>
+          <tr><td>Onboarding plan</td><td>2h30</td><td>20 min</td><td class="gain">130 min</td></tr>
+          <tr><td>Interview notes</td><td>30 min</td><td>5 min</td><td class="gain">25 min</td></tr>
+          <tr><td>360° synthesis</td><td>2h00</td><td>20 min</td><td class="gain">100 min</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+      <h2 class="sh">What this workshop gives you</h2>
+      <ul class="blist">
+        <li>A structured method to prompt ChatGPT for any HR task</li>
+        <li>20 ready-to-use HR prompts you can apply from Monday</li>
+        <li>Hands-on practice on your real use cases</li>
+        <li>A personal adoption plan to build lasting habits</li>
+      </ul>
+      <div class="hbox"><div class="hb-title">The 3-check rule — always before you use AI output</div><div class="hb-text"><strong>Accuracy</strong> — are the facts correct? &nbsp;·&nbsp; <strong>Relevance</strong> — adapted to your context? &nbsp;·&nbsp; <strong>Tone</strong> — matches your employer brand?</div></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M00 · Introduction</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 3 — M00: How ChatGPT works ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M00 — Introduction</div><div class="slide-title">How ChatGPT works — What you need to know</div></div><div class="slide-timing">5 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+      <h2 class="sh">3 things to understand</h2>
+      <div class="hbox sand"><div class="hb-title">1. It predicts, it doesn't know</div><div class="hb-text">ChatGPT generates the most statistically likely response. It doesn't look things up — it doesn't "know" your company. You must provide the context.</div></div>
+      <div class="hbox sand"><div class="hb-title">2. Input quality = output quality</div><div class="hb-text">A vague prompt gives a generic answer. A structured prompt with role, context, task, format, and constraints gives an immediately usable result.</div></div>
+      <div class="hbox sand"><div class="hb-title">3. It doesn't remember previous conversations</div><div class="hb-text">Each new session starts fresh. Keep your best prompts in a library — you'll build yours today.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+      <div class="hbox warn"><div class="hb-title">Data security — mandatory rule</div><div class="hb-text">Never paste personally identifiable data (names, employee IDs, salary information) into the free version of ChatGPT. Always anonymize before submitting. Check your company's AI policy before using any AI tool with confidential data.</div></div>
+      <div class="hbox"><div class="hb-title">What ChatGPT is great at for HR</div><div class="hb-text">Writing and rewriting · Structuring information · Generating questions · Summarizing long documents · Adapting tone for different audiences · Creating templates</div></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M00 · Introduction</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 4 — M01 DIVIDER ═══ -->
+<div class="slide">
+<div class="s-divider">
+  <div class="div-num">01</div>
+  <div class="div-inner">
+    <div class="div-label">Module 01</div>
+    <div class="div-title">Recruiting — From job description<br>to <em>candidate summary</em></div>
+    <div class="div-sub">3 use cases · Job description · STAR interview questions · CV summary</div>
+    <div class="div-badges"><span class="bloom">Bloom: Apply</span><span class="bloom">55 min</span><span class="bloom">3 use cases</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 5 — M01: Prompt anatomy ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M01 — Recruiting</div><div class="slide-title">Anatomy of an effective prompt — The 5 elements</div></div><div class="slide-timing">8 min</div></div>
+  <div class="slide-body">
+    <div class="col-3" style="display:flex;flex-direction:column;gap:12px;justify-content:center">
+      <div class="step-flow">
+        <div class="step-item"><div class="step-circle">R</div><div class="step-lbl">Role</div><div class="step-desc">What expertise to assign</div></div>
+        <div class="step-item"><div class="step-circle">C</div><div class="step-lbl">Context</div><div class="step-desc">Your situation</div></div>
+        <div class="step-item"><div class="step-circle">T</div><div class="step-lbl">Task</div><div class="step-desc">Exactly what you want</div></div>
+        <div class="step-item"><div class="step-circle">F</div><div class="step-lbl">Format</div><div class="step-desc">Output structure</div></div>
+        <div class="step-item"><div class="step-circle">C</div><div class="step-lbl">Constraints</div><div class="step-desc">What to avoid</div></div>
+      </div>
+      <div class="hbox warn"><div class="hb-title">Most common mistake</div><div class="hb-text">Forgetting Role and Context. ChatGPT responds as if speaking to any company. Result: too generic to use directly. Always start with "You are an expert [ROLE]."</div></div>
+      <div class="hbox"><div class="hb-title">The difference</div><div class="hb-text"><strong>Without structure:</strong> "Write a job description for an HRBP." → Generic output, 20 min of rework.<br><strong>With 5 elements:</strong> Complete, on-brand job description → Ready to publish in 4 minutes.</div></div>
+    </div>
+    <div class="col-2" style="display:flex;flex-direction:column;gap:10px;justify-content:center">
+      <div class="hbox sand"><div class="hb-title">R — Role</div><div class="hb-text">You are an expert HR professional specializing in recruitment</div></div>
+      <div class="hbox sand"><div class="hb-title">C — Context</div><div class="hb-text">SaaS company, 450 employees, startup culture, 3 days remote/week</div></div>
+      <div class="hbox sand"><div class="hb-title">T — Task</div><div class="hb-text">Write a complete job description for an HR Business Partner</div></div>
+      <div class="hbox sand"><div class="hb-title">F — Format</div><div class="hb-text">Mission (2 sentences), responsibilities (exactly 5), profile, benefits</div></div>
+      <div class="hbox sand"><div class="hb-title">C — Constraints</div><div class="hb-text">Attractive and inclusive tone, 300 words max, avoid technical HR jargon</div></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M01 · Recruiting</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 6 — M01: Job description ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M01 — Recruiting</div><div class="slide-title">Use case 1 — Job description in 5 minutes</div></div><div class="slide-timing">12 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="prompt-box">
+        <div class="prompt-label">Complete prompt — Job description</div>
+        <div class="prompt-text">You are an expert HR professional specializing in recruitment.<br>Context: SaaS company, 450 employees, startup culture, 3 days remote/week.<br>Write a complete job description for a <span class="pv">[JOB TITLE]</span>.<br>Structure: mission (2 sentences), responsibilities (exactly 5), profile required, benefits.<br>Tone: attractive and inclusive. Max 300 words. Avoid technical HR jargon.</div>
+      </div>
+      <div class="hbox"><div class="hb-title">Live demo</div><div class="hb-text">Watch the prompt in action — from blank page to publish-ready job description in under 5 minutes.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="big-stat"><div class="big-stat-num">45→5</div><div class="big-stat-label">minutes to write a complete<br>job description</div></div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 1A — 10 min</div>
+        <div class="ex-title">Write your own job description</div>
+        <div class="ex-text">Use a real current recruitment need. Build the 5-element prompt. Test in ChatGPT. Apply the 3-check rule before sharing your result with the group.</div>
+        <div class="ex-timer">⏱ 10 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M01 · Recruiting</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 7 — M01: STAR questions ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M01 — Recruiting</div><div class="slide-title">Use case 2 — STAR behavioral interview questions</div></div><div class="slide-timing">15 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <h2 class="sh">What is the STAR method?</h2>
+      <div class="g2">
+        <div class="hbox sand"><div class="hb-title">S — Situation</div><div class="hb-text">The context or challenge</div></div>
+        <div class="hbox sand"><div class="hb-title">T — Task</div><div class="hb-text">Their specific responsibility</div></div>
+        <div class="hbox sand"><div class="hb-title">A — Action</div><div class="hb-text">What they personally did</div></div>
+        <div class="hbox sand"><div class="hb-title">R — Result</div><div class="hb-text">Measurable outcome</div></div>
+      </div>
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — STAR questions</div>
+        <div class="prompt-text">You are an expert recruiter.<br>Generate 10 behavioral STAR questions to evaluate <span class="pv">[COMPETENCY]</span> for a <span class="pv">[JOB TITLE]</span> role.<br>For each question: state the exact competency assessed and the positive signal expected in the answer.</div>
+      </div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="hbox"><div class="hb-title">Why this is powerful</div><div class="hb-text">You get not only the questions — you also get the implicit evaluation rubric. You know exactly what to listen for in each answer. Preparation time: 90 seconds instead of 25 minutes.</div></div>
+      <div class="hbox sand"><div class="hb-title">Example output</div><div class="hb-text" style="font-style:italic">"Describe a situation where two managers in your scope had conflicting objectives. What was your role, what did you do, and what was the outcome?"<br><span style="font-size:12px;color:var(--ink3);margin-top:6px;display:block">Signal: ability to navigate conflict without taking sides · outcome focus</span></div></div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 1B — 8 min</div>
+        <div class="ex-title">Generate STAR questions for your next interview</div>
+        <div class="ex-text">Think of an upcoming interview. Use the prompt to generate 5 STAR questions for the key competency you need to evaluate.</div>
+        <div class="ex-timer">⏱ 8 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M01 · Recruiting</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 8 — M01: CV Summary ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M01 — Recruiting</div><div class="slide-title">Use case 3 — CV summary and candidate profile</div></div><div class="slide-timing">12 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — CV analysis</div>
+        <div class="prompt-text">You are an expert HR recruiter.<br>Here is a candidate's CV: <span class="pv">[PASTE ANONYMIZED CV]</span><br>We are hiring for: <span class="pv">[JOB DESCRIPTION]</span><br>Provide:<br>— 3 key strengths relevant to the role<br>— 2 potential gaps or risks<br>— 1 priority question to ask in the interview<br>— Overall recommendation: proceed / explore further / decline</div>
+      </div>
+      <div class="hbox warn"><div class="hb-title">Privacy rule</div><div class="hb-text">Before pasting any CV into ChatGPT: remove the candidate's name, address, photo, and any identifying information. Use initials only. Check your company's AI policy.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="big-stat"><div class="big-stat-num">35→5</div><div class="big-stat-label">minutes to summarize<br>a candidate profile</div></div>
+      <div class="hbox"><div class="hb-title">How to use this</div><div class="hb-text">Use this prompt after initial CV screening. It structures your thinking before the interview and ensures you assess all candidates on the same criteria.</div></div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 1C — 10 min · Assessment</div>
+        <div class="ex-title">H5P Quiz — Module 01</div>
+        <div class="ex-text">5 questions on prompt structure and recruiting use cases. Minimum pass: 4/5. Complete on your device before moving to Module 02.</div>
+        <div class="ex-timer">⏱ 10 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M01 · Recruiting</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 9 — M02 DIVIDER ═══ -->
+<div class="slide">
+<div class="s-divider">
+  <div class="div-num">02</div>
+  <div class="div-inner">
+    <div class="div-label">Module 02</div>
+    <div class="div-title">Onboarding & Communication —<br>10 minutes instead of <em>3 hours</em></div>
+    <div class="div-sub">90-day integration plans · Internal emails · Document summaries</div>
+    <div class="div-badges"><span class="bloom">Bloom: Apply / Analyze</span><span class="bloom">55 min</span><span class="bloom">3 use cases</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 10 — M02: Onboarding plan ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M02 — Onboarding</div><div class="slide-title">Use case 4 — 90-day onboarding plan in 5 minutes</div></div><div class="slide-timing">18 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:12px;justify-content:center">
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — 90-day onboarding plan</div>
+        <div class="prompt-text">Create a 90-day integration plan for <span class="pv">[NAME]</span>, <span class="pv">[JOB TITLE]</span> starting on <span class="pv">[DATE]</span>.<br>Company: <span class="pv">[SECTOR]</span>. Direct manager: <span class="pv">[NAME]</span>.<br>Organize in 3 phases (30/60/90 days).<br>For each phase: key objectives, concrete actions, people to meet, expected deliverables.</div>
+      </div>
+      <div class="hbox"><div class="hb-title">The personalization key</div><div class="hb-text">The more context you give (company sector, team culture, manager style, tools used), the more immediately usable the plan is. ChatGPT adapts to your organization — not the other way around.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:10px;justify-content:center">
+      <div class="phase-label">Phase 1 — Days 1–30 · Understand</div>
+      <div class="hbox sand"><div class="hb-title">Objective</div><div class="hb-text">Understand the organization, existing HR processes, tools and team dynamics</div></div>
+      <div class="hbox sand"><div class="hb-title">Key actions</div><div class="hb-text">1:1 meetings with HR team · Department tour · Tools training (HRIS, ATS) · Review existing procedures</div></div>
+      <div class="hbox sand"><div class="hb-title">Deliverable</div><div class="hb-text">HR Landscape summary note shared with Head of HR</div></div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 2A — 12 min</div>
+        <div class="ex-text">Think of a new team member joining next week. Create their 90-day plan. Present the first 3 milestones to the group.</div>
+        <div class="ex-timer">⏱ 12 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M02 · Onboarding & Communication</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 11 — M02: Internal comms ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M02 — Communication</div><div class="slide-title">Use case 5 — Internal HR emails and communications</div></div><div class="slide-timing">15 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — Internal communication</div>
+        <div class="prompt-text">You are an HR communication expert.<br>Write a <span class="pv">[TYPE: email / announcement / reminder]</span> about <span class="pv">[TOPIC]</span> for <span class="pv">[AUDIENCE: all employees / managers / new joiners]</span>.<br>Tone: <span class="pv">[professional / warm / urgent]</span>.<br>Length: max <span class="pv">[150 / 250]</span> words.<br>Include: clear subject line, key information, next step for the reader.</div>
+      </div>
+      <div class="prompt-box" style="margin-top:0">
+        <div class="prompt-label">Prompt — Adapt tone to company voice</div>
+        <div class="prompt-text">Here is an example of our company's communication style: <span class="pv">[PASTE EXAMPLE EMAIL]</span><br>Rewrite the following message in the same tone: <span class="pv">[PASTE MESSAGE TO REWRITE]</span></div>
+      </div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <h2 class="sh">Use case 6 — Summarize long documents</h2>
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — Document summary</div>
+        <div class="prompt-text">Summarize the following document in a structured format:<br><span class="pv">[PASTE DOCUMENT]</span><br>Provide:<br>— 3 key points managers need to know<br>— 2 action items for HR<br>— 1 sentence summary for a Slack announcement</div>
+      </div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 2B — 10 min</div>
+        <div class="ex-text">Take a real internal email or announcement you need to write this week. Use the communication prompt. Apply the tone adaptation technique.</div>
+        <div class="ex-timer">⏱ 10 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M02 · Onboarding & Communication</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 12 — M02: Assessment ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M02 — Assessment</div><div class="slide-title">Module 02 recap and self-evaluation</div></div><div class="slide-timing">12 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:12px;justify-content:center">
+      <h2 class="sh">What you can now do</h2>
+      <ul class="blist">
+        <li>Create a personalized 90-day onboarding plan in 5 minutes</li>
+        <li>Write internal HR emails adapted to your company's tone</li>
+        <li>Summarize any long document into actionable key points</li>
+        <li>Adapt the same message for different audiences in seconds</li>
+      </ul>
+      <div class="hbox"><div class="hb-title">Time saved — Module 02 tasks</div><div class="hb-text">Onboarding plan: 2h30 → 20 min · Internal email: 20 min → 3 min · Document summary: 45 min → 5 min</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="ex-box">
+        <div class="ex-tag">Assessment — Self-evaluation checklist</div>
+        <div class="ex-title">Rate yourself on 8 criteria</div>
+        <div class="ex-text">
+          1. I can structure a prompt in 5 elements for any onboarding task<br>
+          2. I used the tone adaptation technique successfully<br>
+          3. I understand when NOT to use ChatGPT for sensitive data<br>
+          4. I applied the 3-check rule before using the output<br>
+          5. I saved at least 30 minutes on a real task during the exercise<br>
+          6. I know how to adapt the plan for different job types<br>
+          7. My prompt produced a result I could use without major rework<br>
+          8. I added at least one prompt to my personal library
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--amber);font-family:'Courier Prime',monospace">Minimum pass: 6/8</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M02 · Onboarding & Communication</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 13 — M03 DIVIDER ═══ -->
+<div class="slide">
+<div class="s-divider">
+  <div class="div-num">03</div>
+  <div class="div-inner">
+    <div class="div-label">Module 03</div>
+    <div class="div-title">Performance & Appraisals —<br>Prepare, conduct, <em>synthesize</em></div>
+    <div class="div-sub">Annual appraisals · 360° feedback synthesis · Individual development plans</div>
+    <div class="div-badges"><span class="bloom">Bloom: Analyze / Create / Evaluate</span><span class="bloom">55 min</span><span class="bloom">3 use cases</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 14 — M03: Annual appraisal prep ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M03 — Performance</div><div class="slide-title">Use case 7 — Annual appraisal preparation</div></div><div class="slide-timing">15 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — Appraisal preparation</div>
+        <div class="prompt-text">You are an experienced HR Business Partner.<br>Help me prepare the annual appraisal for <span class="pv">[ROLE]</span> with <span class="pv">[X]</span> years in the company.<br>Context: <span class="pv">[KEY ACHIEVEMENTS / CHALLENGES THIS YEAR]</span><br>Prepare:<br>— 5 structured questions to open the conversation<br>— 3 development areas to explore<br>— A 60-minute meeting structure<br>— Key phrases to use when giving difficult feedback constructively</div>
+      </div>
+      <div class="hbox"><div class="hb-title">Result</div><div class="hb-text">From 1h15 of preparation to 15 minutes. A structured, personalized approach — not a generic checklist.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <h2 class="sh">Individual Development Plan</h2>
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — IDP creation</div>
+        <div class="prompt-text">Create an Individual Development Plan for <span class="pv">[NAME]</span>, <span class="pv">[ROLE]</span>.<br>Development areas identified: <span class="pv">[LIST 2-3 AREAS]</span><br>Career objective: <span class="pv">[TARGET ROLE / SKILL IN 12-18 MONTHS]</span><br>For each area: learning actions, resources, timeline, success indicators.</div>
+      </div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 3A — 10 min</div>
+        <div class="ex-text">Use a real upcoming appraisal. Generate 5 questions and a meeting structure. Compare with your usual approach.</div>
+        <div class="ex-timer">⏱ 10 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M03 · Performance & Appraisals</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 15 — M03: 360 synthesis ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M03 — Performance</div><div class="slide-title">Use case 8 — 360° feedback synthesis</div></div><div class="slide-timing">20 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="hbox"><div class="hb-title">The problem</div><div class="hb-text">8 feedbacks from 8 different people — 8 writing styles, 8 perspectives. Synthesizing manually takes 2 hours and is prone to bias. ChatGPT can do this in under 3 minutes.</div></div>
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — 360° synthesis</div>
+        <div class="prompt-text">Here are <span class="pv">[N]</span> raw 360° feedbacks for <span class="pv">[ANONYMIZED NAME]</span>:<br><span class="pv">[PASTE ANONYMIZED FEEDBACKS]</span><br><br>Synthesize as a structured report:<br>— 3 recurring strengths with examples<br>— 2 priority improvement areas<br>— 1 watch point<br>— Recommended action plan in 3 concrete steps<br>Tone: professional, constructive, specific.</div>
+      </div>
+      <div class="hbox warn"><div class="hb-title">Ethics — mandatory before pasting</div><div class="hb-text">Step 1: Remove all names and identifying details from feedbacks. Step 2: Use role labels only (e.g., "Manager A", "Peer B"). Step 3: Only then paste into ChatGPT.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="big-stat"><div class="big-stat-num">2h→3'</div><div class="big-stat-label">from raw feedbacks to<br>structured synthesis report</div></div>
+      <div class="hbox sand"><div class="hb-title">What good output looks like</div><div class="hb-text"><strong>Strengths:</strong> "Consistently recognized for ability to build trust with business leaders, with 6/8 reviewers citing specific examples of conflict resolution."<br><br><strong>Development area:</strong> "Delegation skills — 5/8 reviewers noted tendency to retain tasks that could be transferred to the team."</div></div>
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 3B — 15 min · Graded</div>
+        <div class="ex-title">Synthesize real feedbacks</div>
+        <div class="ex-text">Take 8 real anonymized 360° feedbacks. Use ChatGPT to synthesize. Evaluate on 4 criteria: relevance · accuracy · ethics respected · immediately usable.</div>
+        <div class="ex-timer">⏱ 15 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M03 · Performance & Appraisals</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 16 — M03: Difficult feedback ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M03 — Performance</div><div class="slide-title">Use case 9 — Giving difficult feedback constructively</div></div><div class="slide-timing">10 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <h2 class="sh">When direct feedback needs to land well</h2>
+      <p class="lead">ChatGPT can help you find the right words — firm, clear, and constructive — without losing the relationship.</p>
+      <div class="prompt-box">
+        <div class="prompt-label">Prompt — Constructive feedback formulation</div>
+        <div class="prompt-text">Help me formulate feedback for a team member about <span class="pv">[SITUATION / BEHAVIOR]</span>.<br>The impact has been: <span class="pv">[DESCRIBE IMPACT]</span><br>I want the feedback to be: direct but not harsh · specific not vague · focused on behavior not personality.<br>Suggest 3 different ways to open this conversation.</div>
+      </div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="hbox"><div class="hb-title">SBI Framework — Structure to follow</div><div class="hb-text"><strong>S — Situation:</strong> "During the team meeting on Tuesday…"<br><strong>B — Behavior:</strong> "When you interrupted the presenter three times…"<br><strong>I — Impact:</strong> "It created tension and reduced her confidence to continue."<br><br>ChatGPT can generate SBI-structured feedback from your bullet points.</div></div>
+      <div class="hbox sand"><div class="hb-title">Important limit</div><div class="hb-text">ChatGPT formulates — you deliver. Never paste the AI output verbatim into a performance review without personalizing it. Your judgment and knowledge of the person are irreplaceable.</div></div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M03 · Performance & Appraisals</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 17 — M04 DIVIDER ═══ -->
+<div class="slide">
+<div class="s-divider">
+  <div class="div-num">04</div>
+  <div class="div-inner">
+    <div class="div-label">Module 04</div>
+    <div class="div-title">HR Prompt Engineering —<br><em>Master it</em> to own it</div>
+    <div class="div-sub">5 advanced structures · Build your personal library · 30-day adoption plan</div>
+    <div class="div-badges"><span class="bloom">Bloom: Create / Evaluate</span><span class="bloom">40 min</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 18 — M04: Advanced structures ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M04 — Prompt Engineering</div><div class="slide-title">5 advanced prompt structures</div></div><div class="slide-timing">15 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:10px;justify-content:center">
+      <div class="hbox sand"><div class="hb-title">1. Chain-of-thought</div><div class="hb-text">Ask ChatGPT to reason step by step before answering. Example: "Before answering, list the 3 key constraints, then propose a solution." Useful for complex analysis tasks.</div></div>
+      <div class="hbox sand"><div class="hb-title">2. Few-shot</div><div class="hb-text">Give 2–3 examples of the style or format you want. ChatGPT will match your tone exactly. Paste one of your best past emails as a style reference.</div></div>
+      <div class="hbox sand"><div class="hb-title">3. Role-play</div><div class="hb-text">Simulate difficult scenarios before they happen. "Act as a candidate who resists feedback. I will practice my response." Or: "Play devil's advocate on this job description."</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:10px;justify-content:center">
+      <div class="hbox sand"><div class="hb-title">4. Negative constraints</div><div class="hb-text">Define what you do NOT want — it's often more effective than specifying what you want. "Do not use HR jargon. Do not use passive voice. Do not exceed 150 words."</div></div>
+      <div class="hbox sand"><div class="hb-title">5. Iteration without rewriting</div><div class="hb-text">After a disappointing output — refine without starting over.</div></div>
+      <div class="prompt-box">
+        <div class="prompt-label">Iteration template</div>
+        <div class="prompt-text">Your output doesn't match because <span class="pv">[REASON]</span>.<br>Revise it by: <span class="pv">[INSTRUCTION 1]</span>, <span class="pv">[INSTRUCTION 2]</span>.<br>Keep <span class="pv">[WHAT WORKED]</span>.<br>Format: <span class="pv">[FORMAT]</span>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M04 · Prompt Engineering</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 19 — M04: Build your library ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M04 — Prompt Engineering</div><div class="slide-title">Build your personal HR prompt library</div></div><div class="slide-timing">15 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <h2 class="sh">Why a library changes everything</h2>
+      <p class="lead">A prompt you test once and forget is wasted. A prompt saved and reused 50 times is a tool. Your library is the real output of today's workshop.</p>
+      <div class="hbox"><div class="hb-title">How to structure your library</div><div class="hb-text"><strong>Category</strong> — Recruiting / Onboarding / Performance / Communication<br><strong>Use case</strong> — What specific task it solves<br><strong>Prompt</strong> — The full text with [VARIABLES] clearly marked<br><strong>Notes</strong> — Tips on when it works best, variations to try</div></div>
+      <div class="hbox sand"><div class="hb-title">Team Notion library</div><div class="hb-text">You will add your 3 best prompts to the shared Notion workspace before leaving today. Every team member's prompts are visible to all. The library grows with each new use case.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="ex-box">
+        <div class="ex-tag">Exercise 4A — 12 min · Final exercise</div>
+        <div class="ex-title">Create 3 original prompts for your role</div>
+        <div class="ex-text">
+          Step 1: Choose your 3 most frequent HR tasks (the ones that cost you the most time).<br><br>
+          Step 2: Write a complete 5-element prompt for each one.<br><br>
+          Step 3: Test each prompt in ChatGPT. Iterate once if needed.<br><br>
+          Step 4: Add your 3 prompts to the team Notion library with a short note on when to use each.
+        </div>
+        <div class="ex-timer">⏱ 12 min</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M04 · Prompt Engineering</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 20 — Adoption plan ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">M04 — Conclusion</div><div class="slide-title">Your 30-day personal adoption plan</div></div><div class="slide-timing">10 min</div></div>
+  <div class="slide-body">
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div class="hbox"><div class="hb-title">Training is only the beginning</div><div class="hb-text">Real adoption is built in the 30 days after this workshop. Without a habit, there is no time saving. The goal: leave today with 3 concrete AI habits to apply starting Monday.</div></div>
+      <div class="hbox sand"><div class="hb-title">The 3-habit rule</div><div class="hb-text">Choose 3 HR tasks you do every week. Commit to using ChatGPT for each one — every time — for the next 30 days. Track your time savings on the shared dashboard.</div></div>
+      <div class="hbox sand"><div class="hb-title">Share publicly</div><div class="hb-text">Sharing your commitments with the group significantly increases follow-through. You will be asked about your 3 habits at the J+30 check-in.</div></div>
+    </div>
+    <div class="col-half" style="display:flex;flex-direction:column;gap:14px;justify-content:center">
+      <div style="background:var(--dk2);border-radius:10px;padding:22px;border:1px solid var(--line-d)">
+        <div style="font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:16px">My 3 habits — starting Monday</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:rgba(232,160,64,.15);border:1px solid rgba(232,160,64,.3);display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:12px;color:var(--amber);flex-shrink:0">1</div><div style="flex:1;height:1px;background:var(--line-d)"></div></div>
+          <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:rgba(232,160,64,.15);border:1px solid rgba(232,160,64,.3);display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:12px;color:var(--amber);flex-shrink:0">2</div><div style="flex:1;height:1px;background:var(--line-d)"></div></div>
+          <div style="display:flex;gap:12px;align-items:center"><div style="width:28px;height:28px;border-radius:50%;background:rgba(232,160,64,.15);border:1px solid rgba(232,160,64,.3);display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:12px;color:var(--amber);flex-shrink:0">3</div><div style="flex:1;height:1px;background:var(--line-d)"></div></div>
+        </div>
+        <div style="margin-top:16px;font-size:12px;color:var(--cream2);border-top:1px solid var(--line-d);padding-top:12px">J+30 check-in in 4 weeks · Adoption tracked on dashboard</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">M04 · Conclusion</span><span class="sf-r">ChatGPT for HR Teams · TechCorp France 2025</span></div>
+</div>
+</div>
+
+<!-- ═══ SLIDE 21 — RECAP ═══ -->
+<div class="slide">
+<div class="s-content">
+  <div class="slide-header"><div><div class="slide-module">Workshop Summary</div><div class="slide-title">What you can do now — 9 use cases mastered</div></div><div class="slide-timing">End</div></div>
+  <div class="slide-body col">
+    <div class="g3" style="flex:1">
+      <div class="hbox sand"><div class="hb-title">M01 — Recruiting</div><ul class="blist"><li>Job description in 5 min</li><li>10 STAR interview questions in 90 sec</li><li>CV summary and recommendation</li></ul></div>
+      <div class="hbox sand"><div class="hb-title">M02 — Onboarding</div><ul class="blist"><li>90-day plan personalized in 5 min</li><li>Internal emails adapted to company voice</li><li>Long document summary in 3 min</li></ul></div>
+      <div class="hbox sand"><div class="hb-title">M03 — Performance</div><ul class="blist"><li>Annual appraisal prep in 15 min</li><li>360° synthesis in 3 min</li><li>Constructive feedback formulation</li></ul></div>
+    </div>
+    <div style="display:flex;gap:16px">
+      <div class="hbox" style="flex:1">
+        <div class="hb-title">Your next steps</div>
+        <ul class="blist">
+          <li>Add your 3 prompts to the team Notion library today</li>
+          <li>Apply your 3 habits starting Monday</li>
+          <li>J+30 check-in and adoption dashboard review in 4 weeks</li>
+          <li>J+90 evaluation — autonomous prompt creation for any new task</li>
+        </ul>
+      </div>
+      <div style="background:var(--dk2);border-radius:10px;padding:18px 22px;flex:1;border:1px solid var(--line-d)">
+        <div style="font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:12px">Time saved — your team per week</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="text-align:center"><div style="font-family:'Courier Prime',monospace;font-size:26px;color:var(--cream);line-height:1;letter-spacing:.02em">10h</div><div style="font-size:11px;color:var(--cream2);margin-top:3px">per week</div></div>
+          <div style="text-align:center"><div style="font-family:'Courier Prime',monospace;font-size:26px;color:var(--cream);line-height:1;letter-spacing:.02em">40h</div><div style="font-size:11px;color:var(--cream2);margin-top:3px">per month</div></div>
+          <div style="text-align:center"><div style="font-family:'Courier Prime',monospace;font-size:26px;color:var(--amber);line-height:1;letter-spacing:.02em">500h</div><div style="font-size:11px;color:var(--cream2);margin-top:3px">per year</div></div>
+          <div style="text-align:center"><div style="font-family:'Courier Prime',monospace;font-size:26px;color:var(--amber);line-height:1;letter-spacing:.02em">€30K+</div><div style="font-size:11px;color:var(--cream2);margin-top:3px">value recovered</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span class="sf-l">Hassna · AI Integration Consultant · </span><span class="sf-r">Illustrative scenario · TechCorp France 2025</span></div>
+</div>
+</div>
+
+</div><!-- /deck -->
+
+<div class="nav" id="nav">
+  <button id="prev" onclick="go(-1)" disabled>←</button>
+  <div class="dots" id="dots"></div>
+  <div class="counter" id="counter">1 / 21</div>
+  <button id="next" onclick="go(1)">→</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const N=slides.length;
+const counter=document.getElementById('counter');
+const dotsEl=document.getElementById('dots');
+const prevBtn=document.getElementById('prev');
+const nextBtn=document.getElementById('next');
+const pbar=document.getElementById('pbar');
+let cur=0;
+
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur=Math.max(0,Math.min(N-1,n));
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  counter.textContent=(cur+1)+' / '+N;
+  prevBtn.disabled=cur===0;
+  nextBtn.disabled=cur===N-1;
+  pbar.style.width=((cur+1)/N*100)+'%';
+}
+function go(d){goTo(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();go(-1)}
+});
+</script>
+</body>
+</html>

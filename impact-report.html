@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impact Report J+30 — TechCorp France</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500&family=Courier+Prime:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F2EC;--surface:#FFFFFF;--sand:#E6DFD0;
+  --dark:#1A1208;--dark2:#2A2010;
+  --ink:#1C1812;--ink2:#3A3328;--ink3:#7A6F60;--ink4:#AFA49A;
+  --od:#EDE8DC;--od-md:#C4B89A;--od-dim:#A09070;
+  --acc:#C45E1A;--acc-l:#FAEEE0;--acc-h:#943F0A;
+  --grn:#0D4035;--grn-l:#DEF0EB;
+  --line:rgba(28,24,18,0.1);--line-d:rgba(237,232,220,0.1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.7}
+::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:var(--acc)}
+
+/* HEADER */
+.doc-header{background:var(--dark2);padding:36px 52px 28px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--acc)}
+.doc-back{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--od-md);text-decoration:none;transition:color .2s}
+.doc-back:hover{color:var(--acc)}
+.doc-eye{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--od-dim);margin-bottom:7px}
+.doc-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:var(--od);letter-spacing:-.02em;margin-bottom:3px;font-style:italic}
+.doc-sub{font-size:13px;color:var(--od-md)}
+
+/* NOTICE */
+.notice{background:var(--acc-l);border-left:3px solid var(--acc);padding:12px 20px}
+.notice p{font-size:13px;color:var(--acc-h);font-style:italic}
+
+/* KPI BANNER */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-d);border:1px solid var(--line-d);margin-bottom:36px}
+.kpi{background:rgba(255,255,255,.05);padding:22px 18px;text-align:center}
+.kpi-n{font-family:'Courier Prime',monospace;font-size:36px;color:var(--acc);line-height:1;margin-bottom:5px;letter-spacing:.04em}
+.kpi-l{font-size:12px;color:var(--od);line-height:1.4}
+.kpi-s{font-family:'Courier Prime',monospace;font-size:10px;color:var(--od-dim);margin-top:3px}
+
+/* BODY */
+.doc-body{max-width:840px;margin:0 auto;padding:44px 36px}
+.s-block{margin-bottom:40px}
+.s-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--ink);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--acc)}
+.s-title em{font-family:'Courier Prime',monospace;font-size:11px;color:var(--acc);font-style:normal;margin-right:10px}
+p.bp{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:10px}
+p.bp strong{color:var(--ink)}
+
+/* INFOBOX */
+.ibox{border-left:4px solid var(--acc);background:var(--acc-l);padding:14px 18px;margin:10px 0;border-radius:0 6px 6px 0}
+.ibox.sand{border-color:var(--ink3);background:var(--sand)}
+.ibox.green{border-color:var(--grn);background:var(--grn-l)}
+.ibox.dark{background:var(--dark2);border-color:var(--od-dim);border-radius:6px}
+.ib-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.ibox .ib-title{color:var(--acc)}
+.ibox.sand .ib-title{color:var(--ink3)}
+.ibox.green .ib-title{color:var(--grn)}
+.ibox.dark .ib-title{color:var(--od-dim)}
+.ib-text{font-size:13px;line-height:1.65}
+.ibox .ib-text,.ibox.sand .ib-text{color:var(--ink2)}
+.ibox.green .ib-text{color:var(--grn)}
+.ibox.dark .ib-text{color:var(--od)}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:13px}
+th{background:var(--dark);color:var(--od);padding:9px 12px;text-align:left;font-size:12px;font-weight:500}
+td{padding:8px 12px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top;line-height:1.5}
+tr:nth-child(even) td{background:var(--sand)}
+tr:hover td{background:var(--acc-l)}
+.gain{font-family:'Courier Prime',monospace;color:var(--grn);font-weight:500}
+.in-progress{font-family:'Courier Prime',monospace;color:var(--acc);font-weight:500}
+.adopted{font-family:'Courier Prime',monospace;color:var(--grn);font-weight:500}
+.highlight td{background:var(--acc-l) !important}
+
+/* ROI TABLE */
+.roi-table td:last-child{font-family:'Courier Prime',monospace;text-align:right}
+.roi-total{background:var(--dark) !important}
+.roi-total td{color:var(--od) !important;font-weight:500}
+.roi-total td:last-child{color:var(--acc) !important;font-family:'Courier Prime',monospace;font-size:15px}
+
+/* BULLET LIST */
+ul.bl{list-style:none;display:flex;flex-direction:column;gap:7px;margin:8px 0}
+ul.bl li{display:flex;gap:10px;font-size:13px;color:var(--ink2);line-height:1.55}
+ul.bl li::before{content:'';display:block;width:5px;height:5px;border-radius:50%;background:var(--acc);flex-shrink:0;margin-top:7px}
+
+/* PERSON GRID */
+.pg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.pc{background:var(--surface);border:1px solid var(--line);padding:14px 12px;text-align:center}
+.pc.adopted{border-top:3px solid var(--grn)}
+.pc.progress{border-top:3px solid var(--acc)}
+.pc-name{font-family:'Courier Prime',monospace;font-size:10px;color:var(--ink3);margin-bottom:6px;letter-spacing:.06em}
+.pc-score{font-family:'Courier Prime',monospace;font-size:24px;line-height:1;margin-bottom:3px}
+.pc.adopted .pc-score{color:var(--grn)}
+.pc.progress .pc-score{color:var(--acc)}
+.pc-tag{font-family:'Courier Prime',monospace;font-size:9px}
+.pc.adopted .pc-tag{color:var(--grn)}
+.pc.progress .pc-tag{color:var(--acc)}
+.pc-bar{height:3px;background:var(--line);margin-top:7px}
+.pc-fill{height:100%}
+.pc.adopted .pc-fill{background:var(--grn)}
+.pc.progress .pc-fill{background:var(--acc)}
+
+/* SUBHEADING */
+h3.sh{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--ink);margin-bottom:8px;margin-top:18px}
+
+/* FOOTER */
+.doc-footer{background:var(--sand);border-top:1px solid var(--line);padding:16px 36px;display:flex;justify-content:space-between;align-items:center;margin-top:48px}
+.df-l{font-family:'Courier Prime',monospace;font-size:11px;color:var(--ink3)}
+.df-r{font-family:'Courier Prime',monospace;font-size:11px;color:var(--acc)}
+
+/* DARK SECTION */
+.dark-sec{background:var(--dark);padding:36px 52px;margin:0 -52px}
+
+@media(max-width:700px){.doc-header{padding:22px 18px;flex-direction:column;gap:16px}.doc-body{padding:28px 18px}.kpi-row{grid-template-columns:1fr 1fr}.pg{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <a href="index.html" class="doc-back">← Back to portfolio</a>
+  <div>
+    <div class="doc-eye">Phase E — ADDIE · Evaluate</div>
+    <div class="doc-title">Impact Report — J+30</div>
+    <div class="doc-sub">AI Adoption Program · TechCorp France · May 2025</div>
+  </div>
+</div>
+
+<div class="notice">
+  <p>Illustrative reference scenario — TechCorp France is a fictional company created for methodology demonstration. This report illustrates the Phase E (Evaluate) deliverable of a complete ADDIE adoption program.</p>
+</div>
+
+<!-- KPI BANNER — dark bg -->
+<div style="background:var(--dark2);padding:28px 36px">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-n">75%</div><div class="kpi-l">Adoption rate at J+30</div><div class="kpi-s">Target: 85% by J+90</div></div>
+    <div class="kpi"><div class="kpi-n">7.1</div><div class="kpi-l">Avg confidence /10</div><div class="kpi-s">vs 4.2 at baseline</div></div>
+    <div class="kpi"><div class="kpi-n">92</div><div class="kpi-l">Min saved / person / day</div><div class="kpi-s">Recruiting tasks · J+30</div></div>
+    <div class="kpi"><div class="kpi-n">6/8</div><div class="kpi-l">Participants adopted</div><div class="kpi-s">2 on reinforcement plan</div></div>
+  </div>
+</div>
+
+<div class="doc-body">
+
+  <!-- SECTION 1 -->
+  <div class="s-block">
+    <div class="s-title"><em>01</em>Executive Summary</div>
+    <p class="bp">At J+30, 6 of 8 participants have reached functional adoption — they use ChatGPT independently for at least 3 HR tasks per week without assistance. The two remaining participants (Pierre D. and Marc B.) are on a structured reinforcement plan and are expected to reach functional adoption by J+60.</p>
+    <p class="bp">This report documents what changed, why it changed, and what the program recommends for the next phase. The central finding: <strong>adoption barriers were human, not technical.</strong> The program addressed them as such.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="s-block">
+    <div class="s-title"><em>02</em>What We Measured and Why</div>
+    <p class="bp">This program tracks <strong>behavior change</strong> — not training completion. A participant who attended the workshop and completed the quiz but never opens ChatGPT at work has not adopted. A participant who now writes job descriptions in 5 minutes every day has.</p>
+    <h3 class="sh">Three measurement methods</h3>
+    <div class="ibox sand"><div class="ib-title">A — Weekly self-declaration (J+7, J+14, J+21, J+30)</div><div class="ib-text">Each participant submitted a weekly log: which HR tasks they used ChatGPT for and approximately how much time they saved. This is the primary adoption signal.</div></div>
+    <div class="ibox sand"><div class="ib-title">B — Confidence self-assessment</div><div class="ib-text">At baseline and J+30, each participant rated their confidence 1–10: "I can use ChatGPT independently for this HR task without assistance." Perceived ability correlates strongly with sustained usage.</div></div>
+    <div class="ibox sand"><div class="ib-title">C — Direct observation (voluntary)</div><div class="ib-text">3 participants volunteered for a 20-minute observation session at J+28 to verify self-declared usage and identify blocking issues. Not included in scoring.</div></div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="s-block">
+    <div class="s-title"><em>03</em>Baseline vs J+30 — Key Metrics</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Baseline</th><th>J+30</th><th>Change</th></tr></thead>
+      <tbody>
+        <tr><td>Avg. confidence score /10</td><td>4.2</td><td>7.1</td><td class="gain">+2.9 pts (+69%)</td></tr>
+        <tr><td>Adoption rate (active weekly users)</td><td>0%</td><td>75%</td><td class="gain">6 of 8 participants</td></tr>
+        <tr><td>Avg. ChatGPT sessions / week</td><td>0</td><td>14.6</td><td class="gain">+14.6 sessions/week</td></tr>
+        <tr><td>Time saved — job descriptions</td><td>45 min</td><td>5 min</td><td class="gain">40 min saved / task</td></tr>
+        <tr><td>Time saved — recruitment emails</td><td>25 min</td><td>3 min</td><td class="gain">22 min saved / task</td></tr>
+        <tr><td>Time saved — CV summaries</td><td>35 min</td><td>5 min</td><td class="gain">30 min saved / task</td></tr>
+        <tr class="highlight"><td>Pierre D. — confidence score</td><td>2.1</td><td>5.4</td><td class="in-progress">In progress (+3.3 pts)</td></tr>
+        <tr class="highlight"><td>Marc B. — confidence score</td><td>1.8</td><td>4.2</td><td class="in-progress">In progress (+2.4 pts)</td></tr>
+      </tbody>
+    </table>
+    <div class="ibox"><div class="ib-title">Why Pierre D. and Marc B. are highlighted — not failed</div><div class="ib-text">At baseline, both showed the highest ADKAR resistance in the Awareness and Desire dimensions. Their J+30 scores reflect real progress from very low starting points. Reaching functional adoption requires a confidence score of 7.0+. Both are on track for J+60. Their slower curve was predicted by the baseline analysis — this is the ADKAR model working as designed.</div></div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="s-block">
+    <div class="s-title"><em>04</em>Individual Adoption Results</div>
+    <div class="pg">
+      <div class="pc adopted"><div class="pc-name">SOPHIE M.</div><div class="pc-score">9.2</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:92%"></div></div></div>
+      <div class="pc adopted"><div class="pc-name">THOMAS R.</div><div class="pc-score">9.8</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:98%"></div></div></div>
+      <div class="pc adopted"><div class="pc-name">AMINA K.</div><div class="pc-score">8.1</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:81%"></div></div></div>
+      <div class="pc progress"><div class="pc-name">PIERRE D.</div><div class="pc-score">5.4</div><div class="pc-tag">IN PROGRESS</div><div class="pc-bar"><div class="pc-fill" style="width:54%"></div></div></div>
+      <div class="pc adopted"><div class="pc-name">LÉA F.</div><div class="pc-score">7.8</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:78%"></div></div></div>
+      <div class="pc progress"><div class="pc-name">MARC B.</div><div class="pc-score">4.2</div><div class="pc-tag">IN PROGRESS</div><div class="pc-bar"><div class="pc-fill" style="width:42%"></div></div></div>
+      <div class="pc adopted"><div class="pc-name">JULIE P.</div><div class="pc-score">7.5</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:75%"></div></div></div>
+      <div class="pc adopted"><div class="pc-name">KARIM A.</div><div class="pc-score">9.9</div><div class="pc-tag">ADOPTED</div><div class="pc-bar"><div class="pc-fill" style="width:99%"></div></div></div>
+    </div>
+    <table>
+      <thead><tr><th>Name</th><th>Role</th><th>Baseline</th><th>J+30</th><th>Status</th><th>Key observation</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Sophie M.</strong></td><td>Head of HR</td><td>6.0</td><td>9.2</td><td class="adopted">ADOPTED</td><td>Using ChatGPT daily for strategic communications and appraisal prep.</td></tr>
+        <tr><td><strong>Thomas R.</strong></td><td>HR Officer</td><td>7.5</td><td>9.8</td><td class="adopted">ADOPTED</td><td>Became team AI champion. Shared 6 prompts in the Notion library.</td></tr>
+        <tr><td><strong>Amina K.</strong></td><td>Recruiter</td><td>5.2</td><td>8.1</td><td class="adopted">ADOPTED</td><td>Reduced job description time from 45 to 4 min. Consistent daily user.</td></tr>
+        <tr><td><strong>Léa F.</strong></td><td>HRBP</td><td>4.8</td><td>7.8</td><td class="adopted">ADOPTED</td><td>Was skeptical at baseline. Changed after first 360° synthesis in 3 min.</td></tr>
+        <tr><td><strong>Julie P.</strong></td><td>HR Assistant</td><td>3.5</td><td>7.5</td><td class="adopted">ADOPTED</td><td>Low confidence at baseline. Significant progress. Now fully autonomous.</td></tr>
+        <tr><td><strong>Karim A.</strong></td><td>Junior HRBP</td><td>8.0</td><td>9.9</td><td class="adopted">ADOPTED</td><td>Built a personal library of 12 prompts. Peer coach for the whole team.</td></tr>
+        <tr><td><strong>Pierre D.</strong></td><td>Training Officer</td><td>2.1</td><td>5.4</td><td class="in-progress">IN PROGRESS</td><td>Resistance was fear of job replacement. Needs Desire reinforcement.</td></tr>
+        <tr><td><strong>Marc B.</strong></td><td>Payroll Officer</td><td>1.8</td><td>4.2</td><td class="in-progress">IN PROGRESS</td><td>Low engagement with HR use cases. Needs role-specific prompt adaptation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="s-block">
+    <div class="s-title"><em>05</em>Human Side Analysis — Why This Was Not a Training Problem</div>
+    <p class="bp">The most important finding of this program is not the time savings. It is the confirmation that <strong>adoption barriers were human, not technical.</strong> Every participant who struggled did so for a human reason — not because ChatGPT was difficult to use.</p>
+    <h3 class="sh">What the ADKAR baseline revealed</h3>
+    <p class="bp">Before any tool training, the needs analysis identified 4 of 8 participants with moderate to high resistance. The specific barriers mapped to ADKAR dimensions:</p>
+    <ul class="bl">
+      <li><strong>Pierre D. and Marc B.:</strong> low Awareness (unclear why AI was relevant to their specific role) and low Desire (no perceived personal benefit) — the two deepest resistance dimensions</li>
+      <li><strong>Léa F.:</strong> low Desire — skepticism about AI output quality. Resolved during M01 after first live demonstration</li>
+      <li><strong>Julie P.:</strong> low Ability confidence — resolved through structured practice across M01–M03</li>
+    </ul>
+    <h3 class="sh">What changed at the human level</h3>
+    <p class="bp">The most significant behavioral shift came not from the tool training itself — it came from the moment participants experienced their first successful output on a <strong>real task</strong>. Desire follows concrete personal proof, not explanation of benefits.</p>
+    <div class="ibox sand"><div class="ib-title">Léa F. — the skeptic who adopted</div><div class="ib-text">"I was skeptical until I synthesized the 360° feedbacks in 3 minutes. That was the moment I understood." Score moved from 4.8 to 7.8 in 30 days.</div></div>
+    <div class="ibox sand"><div class="ib-title">Julie P. — the low-confidence participant</div><div class="ib-text">"I didn't believe I could do it. The first job description I produced was actually good. That changed everything." Score moved from 3.5 to 7.5.</div></div>
+    <h3 class="sh">What Pierre D. and Marc B. still need</h3>
+    <p class="bp">Both need role-specific demonstrations that make ChatGPT personally relevant to <em>their</em> daily work — not generic HR use cases. The J+60 reinforcement plan addresses this directly.</p>
+    <div class="ibox"><div class="ib-title">Pierre D. — reinforcement plan</div><div class="ib-text">Customized prompts for learning design and training content creation — directly relevant to his Training Officer role. One-to-one session scheduled.</div></div>
+    <div class="ibox"><div class="ib-title">Marc B. — reinforcement plan</div><div class="ib-text">Specific use cases for payroll communications and HR policy summaries — his actual daily tasks. Simplified 3-prompt starter pack to be delivered before end of May.</div></div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="s-block">
+    <div class="s-title"><em>06</em>Return on Investment</div>
+    <table class="roi-table">
+      <thead><tr><th>Calculation</th><th>J+30 (conservative)</th><th>J+90 (projected)</th></tr></thead>
+      <tbody>
+        <tr><td>Participants actively adopted</td><td>6 / 8</td><td>8 / 8</td></tr>
+        <tr><td>Avg. time saved per person / day</td><td>92 min</td><td>124 min</td></tr>
+        <tr><td>Team time saved per week</td><td>~9 hours</td><td>~17 hours</td></tr>
+        <tr><td>Team time saved per year</td><td>~460 hours</td><td>~870 hours</td></tr>
+        <tr><td>Estimated value at €40/h</td><td class="gain">€18,400/year</td><td class="gain">€34,800/year</td></tr>
+        <tr><td>Program cost</td><td>€3,500</td><td>€3,500</td></tr>
+        <tr class="roi-total"><td><strong>ROI</strong></td><td>426%</td><td>894% (projected)</td></tr>
+      </tbody>
+    </table>
+    <p class="bp" style="font-size:12px;color:var(--ink3);font-style:italic">Figures based on self-declared time savings from weekly tracking logs. Participants reported only tasks where they were confident AI contributed to a measurable time reduction.</p>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="s-block">
+    <div class="s-title"><em>07</em>Recommendations — J+30 to J+60</div>
+    <h3 class="sh">Whole team</h3>
+    <ul class="bl">
+      <li>Thomas R. and Karim A. to lead 2 team prompt-sharing sessions (30 min each) during June</li>
+      <li>Module 02 async e-learning released June 1 — Onboarding & Communication · 45 min self-paced</li>
+      <li>Weekly usage tracking continues via 5-minute self-declaration form</li>
+    </ul>
+    <h3 class="sh">Pierre D. — targeted reinforcement</h3>
+    <ul class="bl">
+      <li>One-to-one session (45 min) on learning design use cases: training outlines, quiz generation, learning objectives</li>
+      <li>Custom prompt set for his role delivered before end of May</li>
+      <li>Buddy pairing with Karim A. for peer support during June</li>
+    </ul>
+    <h3 class="sh">Marc B. — role-specific onboarding</h3>
+    <ul class="bl">
+      <li>One-to-one session (45 min) on payroll communications and HR policy summaries</li>
+      <li>3-prompt starter pack: policy reminder emails · absence communication · payroll FAQ answers</li>
+      <li>Target: confidence score 6.0+ by J+60</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="s-block">
+    <div class="s-title"><em>08</em>Conclusion</div>
+    <p class="bp">At J+30, this program has produced measurable behavior change — not training attendance, not quiz completion. 6 of 8 HR professionals now spend their time differently every day.</p>
+    <p class="bp">The two participants who have not yet reached functional adoption are not a program failure. They are its most important proof point. Their slower trajectory was predicted by the ADKAR baseline. Their reinforcement plan is specific to their actual barriers. Their path is defined.</p>
+    <p class="bp">This is what addressing the human side first produces in practice: a program that does not treat all participants the same — because they are not the same.</p>
+    <div class="ibox green">
+      <div class="ib-title">J+90 evaluation — what we will measure</div>
+      <div class="ib-text">
+        Primary: Can all 8 participants build a new prompt independently for a task not covered in the workshop?<br>
+        Secondary: Has adoption rate reached 85% target?<br>
+        Secondary: Has avg. time saving reached 124 min / day?<br>
+        Secondary: Has Pierre D. reached 7.0+ and Marc B. 6.0+?
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="doc-footer">
+  <span class="df-l">Hassna NAJIM · AI Integration Consultant · Phase E — ADDIE</span>
+  <span class="df-r">Illustrative scenario · Not confidential</span>
+</div>
+
+</body>
+</html>

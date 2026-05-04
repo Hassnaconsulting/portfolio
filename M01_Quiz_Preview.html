@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M01 Quiz — ChatGPT for HR Teams</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>:root {
+  --bg: #F5F2EC; --dark: #1A1208; --dark2: #2A2010;
+  --cu: #C45E1A; --cu-l: #FAEEE0; --sand: #E6DFD0;
+  --ink2: #3A3328; --ink3: #7A6F60; --grn: #1E4D38;
+  --grn-l: #DEF0EB; --red: #8B2010; --red-l: #FDE8E0;
+  --line: rgba(26,18,8,0.1);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+html { font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif }
+body { background: var(--bg); color: var(--dark); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+
+/* HEADER */
+.quiz-header { background: var(--dark2); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+.qh-left { display: flex; flex-direction: column; gap: 3px }
+.qh-tag { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #A09070; }
+.qh-title { font-size: 18px; font-weight: 600; color: #EDE8DC; letter-spacing: -.01em; }
+.qh-right { font-family: 'Courier New', monospace; font-size: 11px; color: #A09070; }
+
+/* PROGRESS */
+.progress-bar { height: 4px; background: rgba(255,255,255,.08); }
+.progress-fill { height: 100%; background: var(--cu); transition: width .4s ease; }
+
+/* BODY */
+.quiz-body { max-width: 680px; margin: 0 auto; padding: 36px 24px; }
+
+/* INTRO */
+.intro-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 24px; }
+.intro-title { font-size: 22px; font-weight: 600; color: var(--dark); margin-bottom: 10px; }
+.intro-text { font-size: 14px; color: var(--ink2); line-height: 1.75; margin-bottom: 14px; }
+.intro-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-badge { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); border: 1px solid rgba(196,94,26,.25); padding: 4px 10px; }
+.btn-start { margin-top: 20px; display: inline-block; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 12px 28px; border: none; cursor: pointer; font-family: inherit; transition: background .2s; }
+.btn-start:hover { background: var(--cu); }
+
+/* QUESTION */
+.q-card { background: #fff; border: 1px solid var(--line); padding: 28px 28px; margin-bottom: 16px; display: none; }
+.q-card.active { display: block; }
+.q-counter { font-family: 'Courier New', monospace; font-size: 11px; color: var(--cu); margin-bottom: 12px; letter-spacing: .08em; }
+.q-text { font-size: 16px; font-weight: 500; color: var(--dark); line-height: 1.55; margin-bottom: 20px; }
+.q-options { display: flex; flex-direction: column; gap: 8px; }
+.q-opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); cursor: pointer; transition: background .15s, border-color .15s; background: var(--bg); }
+.q-opt:hover { background: var(--cu-l); border-color: rgba(196,94,26,.3); }
+.q-opt.selected { background: var(--cu-l); border-color: var(--cu); }
+.q-opt.correct { background: var(--grn-l); border-color: var(--grn); }
+.q-opt.wrong { background: var(--red-l); border-color: var(--red); }
+.q-opt.disabled { cursor: default; pointer-events: none; }
+.opt-letter { font-family: 'Courier New', monospace; font-size: 12px; color: var(--cu); min-width: 18px; font-weight: 600; margin-top: 1px; }
+.opt-text { font-size: 14px; color: var(--ink2); line-height: 1.5; }
+.q-feedback { margin-top: 14px; padding: 12px 14px; border-left: 4px solid; font-size: 13px; line-height: 1.6; display: none; }
+.q-feedback.correct { background: var(--grn-l); border-color: var(--grn); color: var(--grn); }
+.q-feedback.wrong { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.btn-next { margin-top: 18px; background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; display: none; transition: background .2s; }
+.btn-next:hover { background: var(--cu); }
+.btn-next.visible { display: inline-block; }
+
+/* RESULTS */
+.results-card { background: #fff; border: 1px solid var(--line); padding: 32px 28px; display: none; }
+.results-card.active { display: block; }
+.r-score-block { text-align: center; padding: 24px; background: var(--dark); margin-bottom: 24px; }
+.r-score-num { font-family: 'Courier New', monospace; font-size: 56px; line-height: 1; margin-bottom: 6px; }
+.r-score-pass .r-score-num { color: var(--cu); }
+.r-score-fail .r-score-num { color: #E06040; }
+.r-score-label { font-size: 13px; color: #C4B89A; }
+.r-status { display: inline-block; font-family: 'Courier New', monospace; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; margin-top: 8px; }
+.r-score-pass .r-status { color: var(--cu); border: 1px solid rgba(196,94,26,.4); }
+.r-score-fail .r-status { color: #E06040; border: 1px solid rgba(224,96,64,.4); }
+.r-breakdown { margin-bottom: 20px; }
+.r-breakdown-title { font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--cu); margin-bottom: 10px; }
+.r-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.r-icon { font-size: 14px; min-width: 18px; }
+.r-q-text { color: var(--ink2); flex: 1; }
+.r-correct-ans { font-size: 12px; color: var(--grn); margin-top: 2px; }
+.r-wrong-ans { font-size: 12px; color: var(--red); margin-top: 2px; }
+.btn-retry { background: var(--dark); color: #EDE8DC; font-size: 12px; letter-spacing: .07em; text-transform: uppercase; padding: 11px 26px; border: none; cursor: pointer; font-family: inherit; margin-right: 10px; transition: background .2s; }
+.btn-retry:hover { background: var(--cu); }
+.q-hint { font-size: 12px; color: var(--ink3); margin-top: 10px; }
+
+/* FOOTER */
+.quiz-footer { background: var(--dark); padding: 12px 32px; display: flex; justify-content: space-between; margin-top: 32px; }
+.qf-l, .qf-r { font-family: 'Courier New', monospace; font-size: 10px; color: #6A5840; }
+</style>
+<script>var SCORM = {
+  API: null, initialized: false,
+  findAPI: function(w) {
+    var n = 0;
+    while (w.API == null && n <= 7) {
+      n++;
+      if (w.parent == null || w.parent == w) break;
+      w = w.parent;
+    }
+    return w.API;
+  },
+  init: function() {
+    this.API = this.findAPI(window);
+    if (!this.API && window.opener) this.API = this.findAPI(window.opener);
+    if (this.API) { this.API.LMSInitialize(""); this.initialized = true; }
+  },
+  set: function(k,v) { if(this.API) this.API.LMSSetValue(k,v); },
+  commit: function() { if(this.API) this.API.LMSCommit(""); },
+  finish: function(score, status) {
+    if (!this.initialized) return;
+    this.set("cmi.core.score.raw", score);
+    this.set("cmi.core.score.min", "0");
+    this.set("cmi.core.score.max", "100");
+    this.set("cmi.core.lesson_status", status);
+    this.set("cmi.core.exit", "");
+    this.commit();
+    this.API.LMSFinish("");
+  }
+};
+window.addEventListener('load', function(){ SCORM.init(); });
+</script>
+</head>
+<body>
+
+<div class="quiz-header">
+  <div class="qh-left">
+    <div class="qh-tag">Assessment · Module 01 · Bloom Level 3</div>
+    <div class="qh-title">Recruiting with ChatGPT — Knowledge Check</div>
+  </div>
+  <div class="qh-right">ChatGPT for HR Teams · TechCorp France</div>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+<div class="quiz-body">
+
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="intro-card">
+      <div class="intro-title">Module 01 Assessment</div>
+      <p class="intro-text">This quiz evaluates your understanding of the 5-element prompt structure and the three recruiting use cases covered in Module 01 — job descriptions, STAR interview questions, and CV summaries.</p>
+      <p class="intro-text">Read each question carefully. There is one correct answer per question. After answering, you will receive immediate feedback before moving to the next question.</p>
+      <div class="intro-meta">
+        <span class="meta-badge">5 questions</span>
+        <span class="meta-badge">Pass: 4/5 (80%)</span>
+        <span class="meta-badge">Bloom: Apply (Level 3)</span>
+        <span class="meta-badge">~8 minutes</span>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="questions">
+
+    <div class="q-card" id="q1">
+      <div class="q-counter">Question 1 of 5</div>
+      <div class="q-text">You are writing a prompt to generate a job description for an HR Business Partner role. Which element is most likely missing from this prompt: <em>"Write a job description for an HRBP. Make it attractive and professional."</em></div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q1','A')"><span class="opt-letter">A</span><span class="opt-text">The Task — it doesn't say what exactly to write</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','B')"><span class="opt-letter">B</span><span class="opt-text">The Role and Context — ChatGPT doesn't know who it is or what kind of company this is for</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','C')"><span class="opt-letter">C</span><span class="opt-text">The Constraints — it doesn't specify the word limit</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q1','D')"><span class="opt-letter">D</span><span class="opt-text">The Format — it doesn't specify the number of responsibilities</span></div>
+      </div>
+      <div class="q-feedback" id="fb1"></div>
+      <button class="btn-next" id="next1" onclick="nextQ(1)">Next question →</button>
+    </div>
+
+    <div class="q-card" id="q2">
+      <div class="q-counter">Question 2 of 5</div>
+      <div class="q-text">A colleague used this prompt: <em>"You are an expert HR recruiter. Write a job description for a Payroll Manager at our company."</em> The result was good but felt generic. What is the most effective single change to improve the output?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q2','A')"><span class="opt-letter">A</span><span class="opt-text">Ask ChatGPT to make it longer and more detailed</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','B')"><span class="opt-letter">B</span><span class="opt-text">Add specific company context: sector, size, culture, and remote policy</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','C')"><span class="opt-letter">C</span><span class="opt-text">Change the role from "expert HR recruiter" to "experienced copywriter"</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q2','D')"><span class="opt-letter">D</span><span class="opt-text">Add "make it creative" to the prompt</span></div>
+      </div>
+      <div class="q-feedback" id="fb2"></div>
+      <button class="btn-next" id="next2" onclick="nextQ(2)">Next question →</button>
+    </div>
+
+    <div class="q-card" id="q3">
+      <div class="q-counter">Question 3 of 5</div>
+      <div class="q-text">You need to generate behavioral interview questions for a HRBP candidate using the STAR method. Which prompt structure will give you the most useful output?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q3','A')"><span class="opt-letter">A</span><span class="opt-text">"Write 10 interview questions for an HRBP."</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','B')"><span class="opt-letter">B</span><span class="opt-text">"You are an expert recruiter. Generate 10 STAR behavioral questions to evaluate conflict management for an HRBP role. For each question, state the competency assessed and the positive signal expected in the answer."</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','C')"><span class="opt-letter">C</span><span class="opt-text">"Write hard interview questions that will challenge an experienced HRBP candidate."</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q3','D')"><span class="opt-letter">D</span><span class="opt-text">"List all possible competencies for an HRBP and create one question per competency."</span></div>
+      </div>
+      <div class="q-feedback" id="fb3"></div>
+      <button class="btn-next" id="next3" onclick="nextQ(3)">Next question →</button>
+    </div>
+
+    <div class="q-card" id="q4">
+      <div class="q-counter">Question 4 of 5</div>
+      <div class="q-text">You receive a CV from a candidate and want to use ChatGPT to summarize it. Before pasting the CV content into ChatGPT, what is the mandatory first step?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q4','A')"><span class="opt-letter">A</span><span class="opt-text">Ask your manager for permission to use AI on candidate data</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','B')"><span class="opt-letter">B</span><span class="opt-text">Check that the CV is not longer than 2 pages</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','C')"><span class="opt-letter">C</span><span class="opt-text">Anonymize the CV — remove name, address, photo, and any identifying information</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q4','D')"><span class="opt-letter">D</span><span class="opt-text">Convert the CV to PDF format before pasting</span></div>
+      </div>
+      <div class="q-feedback" id="fb4"></div>
+      <button class="btn-next" id="next4" onclick="nextQ(4)">Next question →</button>
+    </div>
+
+    <div class="q-card" id="q5">
+      <div class="q-counter">Question 5 of 5</div>
+      <div class="q-text">After using ChatGPT to write a job description, you apply the 3-check rule. You notice the output refers to "our innovative team culture" — but your company is a traditional financial services firm. Which check has failed?</div>
+      <div class="q-options">
+        <div class="q-opt" onclick="selectOpt(this,'q5','A')"><span class="opt-letter">A</span><span class="opt-text">Accuracy — the facts are incorrect</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','B')"><span class="opt-letter">B</span><span class="opt-text">Relevance — the output is not adapted to your company's context</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','C')"><span class="opt-letter">C</span><span class="opt-text">Tone — the language does not match your employer brand</span></div>
+        <div class="q-opt" onclick="selectOpt(this,'q5','D')"><span class="opt-letter">D</span><span class="opt-text">Both Relevance and Tone have failed</span></div>
+      </div>
+      <div class="q-feedback" id="fb5"></div>
+      <button class="btn-next" id="next5" onclick="showResults()">See results →</button>
+    </div>
+
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-card" id="results">
+    <div id="score-block"></div>
+    <div class="r-breakdown">
+      <div class="r-breakdown-title">Question breakdown</div>
+      <div id="breakdown"></div>
+    </div>
+    <button class="btn-retry" onclick="retryQuiz()">Retry quiz</button>
+    <p class="q-hint">Minimum pass: 4/5 (80%). If you scored below 4, review Module 01 slides 5–8 and try again.</p>
+  </div>
+
+</div>
+
+<div class="quiz-footer">
+  <span class="qf-l">Hassna NAJIM · AI Integration Consultant · Phase D — ADDIE · M01 Assessment</span>
+  <span class="qf-r">Illustrative scenario · TechCorp France 2025</span>
+</div>
+
+<script>
+const ANSWERS = {
+  q1: { correct: 'B', feedback: {
+    correct: 'Correct. Without Role and Context, ChatGPT writes for a generic company. The output will sound like a template — usable, but not yours.',
+    wrong: 'Not quite. The prompt does have a task ("write a job description") and constraints ("attractive and professional"). The critical missing elements are Role (who should ChatGPT be?) and Context (what kind of company, culture, size?).'
+  }},
+  q2: { correct: 'B', feedback: {
+    correct: 'Correct. Context is the single most powerful improvement for generic outputs. Adding sector, company size, culture, and remote policy gives ChatGPT the information it needs to write something specific to your organization.',
+    wrong: 'Not quite. Making it longer, changing the role to "copywriter", or adding vague instructions won\'t solve the core problem: ChatGPT doesn\'t know enough about your company to personalize the output. Specific context is always the answer.'
+  }},
+  q3: { correct: 'B', feedback: {
+    correct: 'Correct. This prompt includes Role (expert recruiter), the STAR method explicitly, the specific competency to evaluate (conflict management), the role level (HRBP), and asks for the evaluation signal — not just the questions.',
+    wrong: 'Not quite. Generic prompts produce generic questions. The key is specifying the competency to evaluate and asking for the signal expected in the answer — this gives you an implicit evaluation rubric, not just a list of questions.'
+  }},
+  q4: { correct: 'C', feedback: {
+    correct: 'Correct. Anonymizing is mandatory before pasting any candidate data into ChatGPT. Remove the name, address, contact details, and photo. Use initials or a label ("Candidate A"). This is a GDPR and professional ethics requirement — not optional.',
+    wrong: 'Not quite. The mandatory first step is always anonymization. Remove all identifying information before pasting into any AI tool. This protects the candidate\'s privacy and is a professional obligation regardless of other considerations.'
+  }},
+  q5: { correct: 'D', feedback: {
+    correct: 'Correct. "Innovative team culture" is both not relevant (doesn\'t match a traditional financial services firm) AND the wrong tone (startup language in a traditional sector). Both checks fail here. This is exactly why the 3-check rule exists.',
+    wrong: 'Partially correct — but both Relevance and Tone have failed here. "Innovative team culture" doesn\'t match the company type (Relevance) AND uses language inappropriate for a traditional financial firm (Tone). Always apply all three checks.'
+  }}
+};
+
+const QUESTIONS = ['q1','q2','q3','q4','q5'];
+const LABELS = {
+  q1: 'Missing prompt elements',
+  q2: 'Improving generic output',
+  q3: 'STAR question structure',
+  q4: 'CV data privacy',
+  q5: '3-check rule application'
+};
+let current = 0;
+let userAnswers = {};
+let score = 0;
+
+function startQuiz() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('questions').style.display = 'block';
+  showQuestion(0);
+}
+
+function showQuestion(idx) {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(QUESTIONS[idx]).classList.add('active');
+  updateProgress(idx);
+}
+
+function updateProgress(idx) {
+  var pct = ((idx) / QUESTIONS.length) * 100;
+  document.getElementById('pbar').style.width = pct + '%';
+}
+
+function selectOpt(el, qid, letter) {
+  if (userAnswers[qid]) return; // already answered
+  userAnswers[qid] = letter;
+
+  var opts = el.parentElement.querySelectorAll('.q-opt');
+  var correct = ANSWERS[qid].correct;
+  var isCorrect = letter === correct;
+
+  // Disable all options
+  opts.forEach(function(o) { o.classList.add('disabled'); });
+
+  // Mark correct and wrong
+  opts.forEach(function(o) {
+    var l = o.querySelector('.opt-letter').textContent;
+    if (l === correct) o.classList.add('correct');
+    else if (l === letter && !isCorrect) o.classList.add('wrong');
+  });
+
+  // Show feedback
+  var fb = document.getElementById('fb' + qid.slice(1));
+  fb.textContent = isCorrect
+    ? '✓ ' + ANSWERS[qid].feedback.correct
+    : '✗ ' + ANSWERS[qid].feedback.wrong;
+  fb.className = 'q-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.style.display = 'block';
+
+  if (isCorrect) score++;
+
+  // Show next button
+  var qnum = parseInt(qid.slice(1));
+  var nextBtn = document.getElementById('next' + qnum);
+  nextBtn.classList.add('visible');
+}
+
+function nextQ(num) {
+  current++;
+  if (current < QUESTIONS.length) showQuestion(current);
+}
+
+function showResults() {
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('pbar').style.width = '100%';
+  var res = document.getElementById('results');
+  res.classList.add('active');
+
+  var pct = Math.round((score / QUESTIONS.length) * 100);
+  var passed = score >= 4;
+
+  // Score block
+  var sb = document.getElementById('score-block');
+  sb.innerHTML =
+    '<div class="r-score-block ' + (passed ? 'r-score-pass' : 'r-score-fail') + '">' +
+    '<div class="r-score-num">' + score + ' / 5</div>' +
+    '<div class="r-score-label">' + pct + '% — ' + (passed ? 'Well done.' : 'Below pass threshold.') + '</div>' +
+    '<div class="r-status">' + (passed ? 'PASSED' : 'NOT PASSED') + '</div>' +
+    '</div>';
+
+  // Breakdown
+  var bd = document.getElementById('breakdown');
+  bd.innerHTML = QUESTIONS.map(function(qid) {
+    var ua = userAnswers[qid];
+    var correct = ANSWERS[qid].correct;
+    var ok = ua === correct;
+    return '<div class="r-item">' +
+      '<span class="r-icon">' + (ok ? '✓' : '✗') + '</span>' +
+      '<div><div class="r-q-text">' + LABELS[qid] + '</div>' +
+      '<div class="' + (ok ? 'r-correct-ans' : 'r-wrong-ans') + '">' +
+      'Your answer: ' + ua + ' · Correct: ' + correct +
+      '</div></div></div>';
+  }).join('');
+
+  // SCORM reporting
+  var status = passed ? 'passed' : 'failed';
+  SCORM.finish(pct, status);
+}
+
+function retryQuiz() {
+  current = 0; score = 0; userAnswers = {};
+  document.querySelectorAll('.q-opt').forEach(function(o) {
+    o.className = 'q-opt';
+    o.onclick = function() { selectOpt(this, o.closest('.q-card').id, o.querySelector('.opt-letter').textContent); };
+  });
+  document.querySelectorAll('.q-feedback').forEach(function(f) { f.style.display='none'; });
+  document.querySelectorAll('.btn-next').forEach(function(b) { b.classList.remove('visible'); });
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('questions').style.display = 'block';
+  document.getElementById('pbar').style.width = '0%';
+  showQuestion(0);
+}
+
+document.getElementById('questions').style.display = 'none';
+document.getElementById('results').style.display = 'none';
+document.querySelector('.results-card').style.display = '';
+</script>
+</body>
+</html>
